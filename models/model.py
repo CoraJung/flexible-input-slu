@@ -109,10 +109,16 @@ class JointModel(nn.Module):
         outputs = {}
         if audio_feats is not None:
             hiddens, lengths = self.speech_encoder(audio_feats, audio_lengths)
+            print(f"hidden_size: {hiddens.size}, lengths: {lengths}")
+
             if self.encoder_dim is not None:
                 hiddens = self.aux_embedding(hiddens)
             audio_embedding = self.maxpool(hiddens, lengths)
+            print(f"audio_embedding: {audio_embedding.size}")
+
             audio_logits = self.classifier(audio_embedding)
+            print(f"audio logits: {audio_logits.size}")
+
             outputs['audio_embed'], outputs['audio_logits'] = audio_embedding, audio_logits
 
         if input_text is not None:
@@ -130,9 +136,12 @@ class JointModel(nn.Module):
         outputs = {}
         batch_size = input_text.shape[0]
         max_seq_len = input_text.shape[1]
+        print(f"batch_size: {batch_size}, max_seq_len: {max_seq_len}")
+
         attn_mask = torch.arange(max_seq_len, device=text_lengths.device)[None,:] < text_lengths[:,None]
         attn_mask = attn_mask.long() # Convert to 0-1
         _, text_embedding = self.bert(input_ids=input_text, attention_mask=attn_mask)
         text_logits = self.classifier(text_embedding)
+        print(f"text_embedding: {text_embedding.size}, text_logits: {text_logits.size}")
         outputs['text_embed'], outputs['text_logits'] = text_embedding, text_logits
         return outputs
