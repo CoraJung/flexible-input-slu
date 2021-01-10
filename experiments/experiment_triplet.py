@@ -32,10 +32,10 @@ class ExperimentRunnerTriplet(ExperimentRunnerBase):
             #####################################################################################################
             num_classes = 31
         elif args.dataset == 'snips':
-	    ### Edit by Wendy (01/10/2021) ###
+            ### Edit by Wendy (01/10/2021) ########################################################################
             # data_dir = 'snips_slu'
-	    data_dir = '/misc/vlgscratch5/PichenyGroup/s2i-common/end-to-end-SLU/snips'
-	    ##################################
+            data_dir = '/misc/vlgscratch5/PichenyGroup/s2i-common/end-to-end-SLU/snips'
+            #####################################################################################################
             num_classes = 6
         else:
             raise ValueError("No valid dataset selected!")
