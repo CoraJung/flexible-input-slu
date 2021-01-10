@@ -17,7 +17,7 @@ import torch
 import numpy as np
 from utils.utils import AverageMeter
 from tqdm import tqdm
-from utils.visualize import plot_confusion_matrix
+# from utils.visualize import plot_confusion_matrix
 from sklearn.metrics import confusion_matrix
 
 
@@ -70,12 +70,12 @@ class ExperimentRunnerBase:
                 avg_train_loss.update([train_loss.item()])
                 avg_train_acc.update([train_acc])
 
-                # Save the step checkpoint if needed
-                if step % self.save_every == 0:
-                    step_chkpt_path = os.path.join(self.model_dir,
-                                                   'step_chkpt_{}_{}.pth'.format(epoch, step))
-                    print("Saving the model checkpoint for epoch {} at step {}".format(epoch, step))
-                    torch.save(self.model.state_dict(), step_chkpt_path)
+                ### Save the step checkpoint if needed (commented out on Jan 8th 2021)
+                # if step % self.save_every == 0:
+                    # step_chkpt_path = os.path.join(self.model_dir,
+                                                  # 'step_chkpt_{}_{}.pth'.format(epoch, step))
+                    # print("Saving the model checkpoint for epoch {} at step {}".format(epoch, step))
+                    # torch.save(self.model.state_dict(), step_chkpt_path)
 
                 # Logging and validation check
                 if step % self.print_every == 0:
@@ -174,8 +174,8 @@ class ExperimentRunnerBase:
                             audio=all_audio_embeddings,
                             text=all_text_embeddings,
                             labels=all_true_labels)
-        cm = confusion_matrix(all_true_labels, all_pred_labels)
-        plot_confusion_matrix(cm, self.test_loader.dataset.labels_list(), normalize=True)
+        # cm = confusion_matrix(all_true_labels, all_pred_labels)
+        # plot_confusion_matrix(cm, self.test_loader.dataset.labels_list(), normalize=True)
 
         print('Final test acc = {:.4f}, test loss = {:.4f}'.format(avg_test_acc.get(), avg_test_loss.get()))
         return avg_test_loss.get(), avg_test_acc.get()
