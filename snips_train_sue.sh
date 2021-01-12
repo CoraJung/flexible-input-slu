@@ -3,11 +3,11 @@
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=5
 #SBATCH --time=5:00:00
-#SBATCH --mem-per-cpu=20GB
-#SBATCH --job-name=fluent_train
+#SBATCH --mem-per-cpu=10GB
+#SBATCH --job-name=snips_train
 #SBATCH --mail-type=END
 #SBATCH --mail-user=sjc433@nyu.edu
-#SBATCH --output=fluent_train_%j.out
+#SBATCH --output=snips_train_%j.out
 #SBATCH --gres=gpu:v100:1
   
 # Refer to https://sites.google.com/a/nyu.edu/nyu-hpc/documentation/prince/batch/submitting-jobs-with-sbatch
@@ -18,10 +18,9 @@ module purge
 
 # Activate the conda environment
 module load anaconda3
-source activate s2i_env
-pip install -r requirements.txt
+source activate alexa_env
 
 # Execute the script
-python train.py 
+python train.py --dataset snips
 
 # And we're done!
