@@ -158,4 +158,4 @@ class JointModel(nn.Module):
         text_logits = self.classifier(text_embedding)
         print(f"text_embedding: {text_embedding.size()}, text_logits: {text_logits.size()}")
         outputs['text_embed'], outputs['text_logits'] = text_embedding, text_logits
-        return outputs
+        return outputs 
