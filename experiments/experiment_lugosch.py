@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import torch
-from models.model_combined import JointModel
+from models.model_lugosch import JointModel
 from dataloader.data import get_triplet_dataloaders
 from experiments.experiment_base import ExperimentRunnerBase
 import torch.nn.functional as F
