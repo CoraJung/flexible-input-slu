@@ -17,6 +17,9 @@ import torch
 import transformers
 from models.layers import SimpleEncoder, SimpleMaxPoolDecoder, SubsampledBiLSTMEncoder, SimpleMaxPoolClassifier, SimpleSeqDecoder, get_bert, MaskedMaxPool, ConvolutionalSubsampledBiLSTMEncoder
 
+""" Combined model (Alexa & Lugosch) """
+import lugosch.models
+### Note we need to read config or hard-code depending on what args we are using
 
 class SLUModelBase(nn.Module):
     """Baseclass for SLU models"""
@@ -91,15 +94,22 @@ class BertNLU(nn.Module):
 
 class JointModel(nn.Module):
     """JointModel which combines both modalities"""
+    """Replace Alexa's audio embedding with Lugosch's word embeddings"""
+    
     def __init__(self, input_dim, num_layers, num_classes, encoder_dim=None, bert_pretrained=True, bert_pretrained_model_name='bert-base-cased'):
         super().__init__()
         self.bert = get_bert(bert_pretrained, bert_pretrained_model_name)
-        self.encoder_dim = encoder_dim
-        if encoder_dim is None:
-            self.speech_encoder = SubsampledBiLSTMEncoder(input_dim=input_dim, encoder_dim=self.bert.config.hidden_size//2, num_layers=num_layers)
-        else:
-            self.speech_encoder = SubsampledBiLSTMEncoder(input_dim=input_dim, encoder_dim=encoder_dim, num_layers=num_layers)
-            self.aux_embedding = nn.Linear(2*encoder_dim, self.bert.config.hidden_size)
+        
+        ### Comment out Alexa's encoder
+#         self.encoder_dim = encoder_dim
+        
+#         if encoder_dim is None:
+#             self.speech_encoder = SubsampledBiLSTMEncoder(input_dim=input_dim, encoder_dim=self.bert.config.hidden_size//2, num_layers=num_layers)
+#         else:
+#             self.speech_encoder = SubsampledBiLSTMEncoder(input_dim=input_dim, encoder_dim=encoder_dim, num_layers=num_layers)
+#             self.aux_embedding = nn.Linear(2*encoder_dim, self.bert.config.hidden_size)
+
+        self.lugosch_model = lugosch.models.PretrainedModel(config) #add config later
         self.maxpool = MaskedMaxPool()
         self.classifier = nn.Linear(self.bert.config.hidden_size, num_classes)
 
@@ -108,15 +118,19 @@ class JointModel(nn.Module):
             return self.forward_text(input_text, text_lengths)
         outputs = {}
         if audio_feats is not None:
-            hiddens, lengths = self.speech_encoder(audio_feats, audio_lengths)
+            
+            #hiddens, lengths = self.speech_encoder(audio_feats, audio_lengths)
+            hiddens = self.lugosch_model.compute_features(audio_feats) #check input dimension  use Lugosch's padded input
+            lengths = audio_lengths
             print(f"hidden_size: {hiddens.size()}, lengths: {lengths}")
 
-            if self.encoder_dim is not None:
-                hiddens = self.aux_embedding(hiddens)
+#             if self.encoder_dim is not None:
+#                 hiddens = self.aux_embedding(hiddens)
+
             audio_embedding = self.maxpool(hiddens, lengths)
             print(f"audio_embedding: {audio_embedding.size()}")
 
-            audio_logits = self.classifier(audio_embedding)
+            audio_logits = self.classifier(audio_embedding) 
             print(f"audio logits: {audio_logits.size()}")
 
             outputs['audio_embed'], outputs['audio_logits'] = audio_embedding, audio_logits

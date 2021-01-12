@@ -517,6 +517,8 @@ class CollateWavsASR:
 		batch: list of tuples (input wav, phoneme labels, word labels)
 
 		Returns a minibatch of wavs and labels as Tensors.
+        
+		Return the length of original inputs
 		"""
 		x = []; y_phoneme = []; y_word = []
 		batch_size = len(batch)
