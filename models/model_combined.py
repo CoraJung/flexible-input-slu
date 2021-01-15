@@ -16,6 +16,7 @@ import torch.nn as nn
 import torch
 import transformers
 from models.layers import SimpleEncoder, SimpleMaxPoolDecoder, SubsampledBiLSTMEncoder, SimpleMaxPoolClassifier, SimpleSeqDecoder, get_bert, MaskedMaxPool, ConvolutionalSubsampledBiLSTMEncoder
+import os
 
 """ Combined model (Alexa & Lugosch) """
 import lugosch.models
