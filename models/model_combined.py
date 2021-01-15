@@ -110,8 +110,7 @@ class JointModel(nn.Module):
 
  
         self.aux_embedding = nn.Linear(config.enc_dim, self.bert.config.hidden_size)
-        self.lugosch_model = lugosch.models.PretrainedModel(config) #add config later
-        self.encoder_dim = config.word_rnn_num_hidden
+        self.lugosch_model = lugosch.models.PretrainedModel(config)
         self.maxpool = MaskedMaxPool()
         self.classifier = nn.Linear(self.bert.config.hidden_size, num_classes)
 
@@ -119,8 +118,10 @@ class JointModel(nn.Module):
         if text_only:
             return self.forward_text(input_text, text_lengths)
         outputs = {}
+        
         if audio_feats is not None:
             
+            print(f"audio feats from JointModel : {audio_feats.size()}")
             #hiddens, lengths = self.speech_encoder(audio_feats, audio_lengths)
             hiddens = self.lugosch_model.compute_features(audio_feats) #check input dimension use Lugosch's padded input
             lengths = audio_lengths
