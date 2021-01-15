@@ -111,6 +111,10 @@ class JointModel(nn.Module):
  
         self.aux_embedding = nn.Linear(config.enc_dim, self.bert.config.hidden_size)
         self.lugosch_model = lugosch.models.PretrainedModel(config)
+        pretrained_model_path = os.path.join(config.libri_folder, "libri_pretraining", "model_state.pth")
+        
+        self.lugosch_model.load_state_dict(torch.load(pretrained_model_path))
+            
         self.maxpool = MaskedMaxPool()
         self.classifier = nn.Linear(self.bert.config.hidden_size, num_classes)
 
