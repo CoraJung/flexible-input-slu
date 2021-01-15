@@ -46,7 +46,9 @@ class ExperimentRunnerTriplet(ExperimentRunnerBase):
                                 num_classes=num_classes,
                                 encoder_dim=args.enc_dim,
                                 bert_pretrained=not args.bert_random_init,
-                                bert_pretrained_model_name=args.bert_model_name)
+                                bert_pretrained_model_name=args.bert_model_name,
+                                config=args)
+                                
         print(self.model)
 
         # Set the Device and Distributed Settings
