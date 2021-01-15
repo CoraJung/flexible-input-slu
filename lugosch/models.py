@@ -294,7 +294,7 @@ class PretrainedModel(torch.nn.Module):
 
 		self.word_layers = torch.nn.ModuleList(self.word_layers)
 		self.word_linear = torch.nn.Linear(out_dim, config.vocabulary_size)
-		self.pretraining_type = config.pretraining_type
+		self.pretraining_type = 2 # config.pretraining_type
 		if self.is_cuda:
 			self.cuda()
 
