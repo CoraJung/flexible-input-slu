@@ -1,4 +1,5 @@
-# Alexa End-to-End SLU
+# IBM-NYU Project
+## Alexa + Libri Merged End-to-End SLU Syatem
 
 This setup allows to train end-to-end neural models for spoken language understanding (SLU).
 It uses either the Snips SLU or the Fluent Speech dataset (FSC).

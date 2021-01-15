@@ -118,7 +118,7 @@ def parse():
                         help="Number of encoder LSTM layers")
 
     parser.add_argument("--enc-dim",
-                        default=512,
+                        default=128,#original 512
                         type=int,
                         help="Hidden dimension of encoder LSTM")
 
@@ -146,6 +146,78 @@ def parse():
                         default=None,
                         type=str,
                         help="Checkpoint path to be used for testing.")
+
+    ### Lugosch's Parser ###
+    parser.add_argument("--use_sincnet",
+                        default=True)
+
+    parser.add_argument("--fs",
+                        default=16000)
+
+    parser.add_argument("--cnn_N_filt",
+                        nargs="+",
+                        default=[80,60,60])
+
+    parser.add_argument("--cnn_len_filt",
+                        nargs="+",
+                        default=[401,5,5])
+
+    parser.add_argument("--cnn_stride",
+                        nargs="+",
+                        default=[80,1,1])
+
+    parser.add_argument("--cnn_max_pool_len",
+                        nargs="+",
+                        default=[2,1,1])
+
+    parser.add_argument("--cnn_act",
+                        nargs="+",
+                        default=["leaky_relu","leaky_relu","leaky_relu"])
+
+    parser.add_argument("--cnn_drop",
+                        nargs="+",
+                        default=[0.0,0.0,0.0])
+
+    parser.add_argument("--phone_rnn_num_hidden",
+                        nargs="+",
+                        default=[128,128])
+
+    parser.add_argument("--phone_downsample_len",
+                        nargs="+",
+                        default=[2,2])
+
+    parser.add_argument("--phone_downsample_type",
+                        nargs="+",
+                        default=["avg","avg"])
+
+    parser.add_argument("--phone_rnn_drop",
+                        nargs="+",
+                        default=[0.5,0.5])
+
+    parser.add_argument("--phone_rnn_bidirectional",
+                        default=True)
+
+    parser.add_argument("--word_rnn_num_hidden",
+                        nargs="+",
+                        default=[128,128])
+
+    parser.add_argument("--word_downsample_len",
+                        nargs="+",
+                        default=[2,2])
+
+    parser.add_argument("--word_downsample_type",
+                        nargs="+",
+                        default=["avg","avg"])
+
+    parser.add_argument("--word_rnn_drop",
+                        nargs="+",
+                        default=[0.5,0.5])
+
+    parser.add_argument("--word_rnn_bidirectional",
+                        default=True)
+
+    parser.add_argument("--vocabulary_size",
+                        default=10000)
 
     args = parser.parse_args()
     return args

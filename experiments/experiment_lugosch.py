@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import torch
-from models.model import JointModel
+from models.model_combined import JointModel
 from dataloader.data import get_triplet_dataloaders
 from experiments.experiment_base import ExperimentRunnerBase
 import torch.nn.functional as F
@@ -44,11 +44,9 @@ class ExperimentRunnerTriplet(ExperimentRunnerBase):
         self.model = JointModel(input_dim=40,
                                 num_layers=args.num_enc_layers,
                                 num_classes=num_classes,
-                                encoder_dim=args.enc_dim,#128
+                                encoder_dim=args.enc_dim,
                                 bert_pretrained=not args.bert_random_init,
-                                bert_pretrained_model_name=args.bert_model_name,
-                                config=args)
-                                
+                                bert_pretrained_model_name=args.bert_model_name)
         print(self.model)
 
         # Set the Device and Distributed Settings
