@@ -4,6 +4,10 @@ import sys
 import os
 import math
 
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 def flip(x, dim):
 	xsize = x.size()
 	dim = x.dim() + dim if dim < 0 else dim

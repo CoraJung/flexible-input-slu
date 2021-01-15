@@ -96,7 +96,11 @@ class JointModel(nn.Module):
     """JointModel which combines both modalities"""
     """Replace Alexa's audio embedding with Lugosch's word embeddings"""
     
+<<<<<<< Updated upstream
     def __init__(self, input_dim, num_layers, num_classes, encoder_dim=None, bert_pretrained=True, bert_pretrained_model_name='bert-base-cased'):
+=======
+    def __init__(self, input_dim, num_layers, num_classes, encoder_dim=None, bert_pretrained=True, bert_pretrained_model_name='bert-base-cased',config):
+>>>>>>> Stashed changes
         super().__init__()
         self.bert = get_bert(bert_pretrained, bert_pretrained_model_name)
         
@@ -108,6 +112,10 @@ class JointModel(nn.Module):
 #             self.speech_encoder = SubsampledBiLSTMEncoder(input_dim=input_dim, encoder_dim=encoder_dim, num_layers=num_layers)
 #             self.aux_embedding = nn.Linear(2*encoder_dim, self.bert.config.hidden_size)
 
+<<<<<<< Updated upstream
+=======
+        self.aux_embedding = nn.Linear(config.enc_dim, self.bert.config.hidden_size)
+>>>>>>> Stashed changes
         self.lugosch_model = lugosch.models.PretrainedModel(config) #add config later
         self.maxpool = MaskedMaxPool()
         self.classifier = nn.Linear(self.bert.config.hidden_size, num_classes)
@@ -119,11 +127,20 @@ class JointModel(nn.Module):
         if audio_feats is not None:
             
             #hiddens, lengths = self.speech_encoder(audio_feats, audio_lengths)
+<<<<<<< Updated upstream
             hiddens = self.lugosch_model.compute_features(audio_feats) #check input dimension  use Lugosch's padded input
+=======
+            hiddens = self.lugosch_model.compute_features(audio_feats) #check input dimension use Lugosch's padded input
+>>>>>>> Stashed changes
             lengths = audio_lengths
             print(f"hidden_size: {hiddens.size()}, lengths: {lengths}")
 #             if self.encoder_dim is not None:
 #                 hiddens = self.aux_embedding(hiddens)
+<<<<<<< Updated upstream
+=======
+
+            hiddens = self.aux_embedding(hiddens)
+>>>>>>> Stashed changes
             audio_embedding = self.maxpool(hiddens, lengths)
             print(f"audio_embedding: {audio_embedding.size()}")
 
