@@ -4,10 +4,10 @@
 #SBATCH --cpus-per-task=5
 #SBATCH --time=1:00:00
 #SBATCH --mem-per-cpu=10GB
-#SBATCH --job-name=fluent_merged_model
+#SBATCH --job-name=fluent_lugosch
 #SBATCH --mail-type=END
-#SBATCH --mail-user=mtp363@nyu.edu
-#SBATCH --output=fluent_merged_model_print_%j.out
+#SBATCH --mail-user=sjc433@nyu.edu
+#SBATCH --output=fluent_lugosch_%j.out
 #SBATCH --gres=gpu:v100:1
   
 # Refer to https://sites.google.com/a/nyu.edu/nyu-hpc/documentation/prince/batch/submitting-jobs-with-sbatch
@@ -21,6 +21,6 @@ module load anaconda3
 source activate alexa_env
 
 # Execute the script
-python train.py --num-epochs=1
+python main.py --num-epochs=1 --experiment="experiments.experiment_lugosch.ExperimentRunnerTriplet"
 
 # And we're done!

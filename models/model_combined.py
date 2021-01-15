@@ -97,7 +97,7 @@ class JointModel(nn.Module):
     """Replace Alexa's audio embedding with Lugosch's word embeddings"""
     
 
-    def __init__(self, input_dim, num_layers, num_classes, encoder_dim=None, bert_pretrained=True, bert_pretrained_model_name='bert-base-cased',config):
+    def __init__(self,config, input_dim, num_layers, num_classes, encoder_dim=None, bert_pretrained=True, bert_pretrained_model_name='bert-base-cased'):
         super().__init__()
         self.bert = get_bert(bert_pretrained, bert_pretrained_model_name)
         
