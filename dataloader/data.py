@@ -35,13 +35,14 @@ class BaseDataset(Dataset):
 
         #-----------------------------------------------------------
         idx = idx % len(self.df) # just leave it just in case
-	##################### Emmy 11/06 - use direct path
-	# wav_path = os.path.join(self.base_path, self.df.loc[idx].path)
-	wav_path = self.df.loc[idx].path
-	effect = torchaudio.sox_effects.SoxEffectsChain()
-	effect.set_input_file(wav_path)
+        ##################### Emmy 11/06 - use direct path
+        # wav_path = os.path.join(self.base_path, self.df.loc[idx].path)
+        wav_path = self.df.loc[idx].path
+        effect = torchaudio.sox_effects.SoxEffectsChain()
+        effect.set_input_file(wav_path)
         wav, fs = effect.sox_build_flow_effects()
-	# x = wav[0].numpy()
+        
+        # x = wav[0].numpy()
         x = wav[0]
         if idx == 1:
             print(f"lugosch audio features are: {x.size()}")
