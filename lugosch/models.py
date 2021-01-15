@@ -4,10 +4,6 @@ import sys
 import os
 import math
 
-<<<<<<< Updated upstream
-=======
-
->>>>>>> Stashed changes
 def flip(x, dim):
 	xsize = x.size()
 	dim = x.dim() + dim if dim < 0 else dim
@@ -257,7 +253,17 @@ class PretrainedModel(torch.nn.Module):
 			self.phoneme_layers.append(layer)
 
 		self.phoneme_layers = torch.nn.ModuleList(self.phoneme_layers)
-		self.phoneme_linear = torch.nn.Linear(out_dim, config.num_phonemes)
+		# add calculation for num_phoneme
+		if os.path.isfile(os.path.join(config.libri_folder, "libri_pretraining", "phonemes.txt")):
+			Sy_phoneme = []
+			with open(os.path.join(config.libri_folder, "libri_pretraining", "phonemes.txt"), "r") as f:
+				for line in f.readlines():
+					if line.rstrip("\n") != "": Sy_phoneme.append(line.rstrip("\n"))
+			num_phonemes = len(Sy_phoneme)
+		else:
+			print("No phoneme file found.")
+
+		self.phoneme_linear = torch.nn.Linear(out_dim, num_phonemes)
 
 		# word RNN
 		num_rnn_layers = len(config.word_rnn_num_hidden)

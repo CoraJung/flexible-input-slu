@@ -219,5 +219,8 @@ def parse():
     parser.add_argument("--vocabulary_size",
                         default=10000)
 
+    parser.add_argument("--libri_folder",
+                        default="/misc/vlgscratch5/PichenyGroup/s2i-common/alexa-slu/config")
+
     args = parser.parse_args()
     return args
