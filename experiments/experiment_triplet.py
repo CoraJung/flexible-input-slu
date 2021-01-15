@@ -44,7 +44,7 @@ class ExperimentRunnerTriplet(ExperimentRunnerBase):
         self.model = JointModel(input_dim=40,
                                 num_layers=args.num_enc_layers,
                                 num_classes=num_classes,
-                                encoder_dim=args.enc_dim,
+                                encoder_dim=args.enc_dim,#128
                                 bert_pretrained=not args.bert_random_init,
                                 bert_pretrained_model_name=args.bert_model_name)
         print(self.model)

@@ -106,9 +106,10 @@ class JointModel(nn.Module):
 #             self.speech_encoder = SubsampledBiLSTMEncoder(input_dim=input_dim, encoder_dim=self.bert.config.hidden_size//2, num_layers=num_layers)
 #         else:
 #             self.speech_encoder = SubsampledBiLSTMEncoder(input_dim=input_dim, encoder_dim=encoder_dim, num_layers=num_layers)
-#             self.aux_embedding = nn.Linear(2*encoder_dim, self.bert.config.hidden_size)
-
+        
+        self.aux_embedding = nn.Linear(2*encoder_dim, self.bert.config.hidden_size)
         self.lugosch_model = lugosch.models.PretrainedModel(config) #add config later
+        self.encoder_dim = config.word_rnn_num_hidden
         self.maxpool = MaskedMaxPool()
         self.classifier = nn.Linear(self.bert.config.hidden_size, num_classes)
 
@@ -122,8 +123,8 @@ class JointModel(nn.Module):
             hiddens = self.lugosch_model.compute_features(audio_feats) #check input dimension  use Lugosch's padded input
             lengths = audio_lengths
             print(f"hidden_size: {hiddens.size()}, lengths: {lengths}")
-#             if self.encoder_dim is not None:
-#                 hiddens = self.aux_embedding(hiddens)
+#           if self.encoder_dim is not None:
+            hiddens = self.aux_embedding(hiddens)
             audio_embedding = self.maxpool(hiddens, lengths)
             print(f"audio_embedding: {audio_embedding.size()}")
 
