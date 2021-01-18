@@ -361,8 +361,8 @@ class PretrainedModel(torch.nn.Module):
 		if self.is_cuda:
 			x = x.cuda()
 
-		# out = x.unsqueeze(1) 
-		out = x # audio feats(x) is already 3D (no need to unsqueeze)
+		out = x.unsqueeze(1) 
+		# out = x
 		for layer in self.phoneme_layers:
 			print(f"input to the phoneme layer in compute_features(): {out.size()}")
 			out = layer(out)
