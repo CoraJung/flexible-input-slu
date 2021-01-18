@@ -44,11 +44,11 @@ class BaseDataset(Dataset):
         
         # x = wav[0].numpy()
         x = wav[0]
-        if idx == 1:
-            print(f"lugosch audio features are: {x.size()}")
-            print(f"lugosch audio feature contents: {x}")
-            print(f"features extracted from kaldi mfcc: {fbank_feats.size()}")
-            print(f"feature contents extracted from kaldi mfcc: {fbank_feats}")
+        # if idx == 1:
+        print(f"lugosch audio features are: {x.size()}")
+        print(f"lugosch audio feature contents: {x}")
+        print(f"features extracted from kaldi mfcc: {fbank_feats.size()}")
+        print(f"feature contents extracted from kaldi mfcc: {fbank_feats}")
         #-------------------------------------------------------------
         intent = df_row['intent_label']
         encoding = self.bert_tokenizer.encode_plus(
