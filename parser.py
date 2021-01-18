@@ -118,7 +118,7 @@ def parse():
                         help="Number of encoder LSTM layers")
 
     parser.add_argument("--enc-dim",
-                        default=128,#original 512
+                        default=256,#original 512
                         type=int,
                         help="Hidden dimension of encoder LSTM")
 

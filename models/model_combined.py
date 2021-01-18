@@ -110,7 +110,7 @@ class JointModel(nn.Module):
 #             self.speech_encoder = SubsampledBiLSTMEncoder(input_dim=input_dim, encoder_dim=encoder_dim, num_layers=num_layers)
 
  
-        self.aux_embedding = nn.Linear(config.enc_dim, self.bert.config.hidden_size)
+        self.aux_embedding = nn.Linear(config.enc_dim, self.bert.config.hidden_size) #bert_hidden_size = 768 enc_dim = 128
         self.lugosch_model = lugosch.models.PretrainedModel(config)
         pretrained_model_path = os.path.join(config.libri_folder, "libri_pretraining", "model_state.pth")
         
@@ -130,7 +130,7 @@ class JointModel(nn.Module):
             #hiddens, lengths = self.speech_encoder(audio_feats, audio_lengths)
             hiddens = self.lugosch_model.compute_features(audio_feats) #check input dimension use Lugosch's padded input
             lengths = audio_lengths
-            print(f"hidden_size: {hiddens.size()}, lengths: {lengths}")
+            print(f"hidden_size: {hiddens.size()}, lengths: {lengths}") # hidden_size = {32, 24, 256}
 
 #             if self.encoder_dim is not None:
 #                 hiddens = self.aux_embedding(hiddens)
