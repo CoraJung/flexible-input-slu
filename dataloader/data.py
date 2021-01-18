@@ -306,13 +306,30 @@ def default_collate_triplet(inputs):
         'length': (B,) length of each utterance
         'label': (B,) label of each utterance
     '''
-    feats = [data['feats'] for data in inputs]
+    # ---------------------------------------------
+    # lugosch collatewavsSLU from data.py incorporated
+    x = []
+
+    for data in inputs:
+        x_ = data['feats']
+        x.append(torch.tensor(x_).float())
+
+    # pad all sequences to have same length
+    T = max([len(x_) for x_ in x])
+    for index in range(len(x)): #le(x) == batchsize
+        x_pad_length = (T - len(x[index]))
+        x[index] = torch.nn.functional.pad(x[index], (0,x_pad_length))
+
+    x = torch.stack(x)
+    padded_feats = x
+    # ---------------------------------------------
+    # feats = [data['feats'] for data in inputs]
     labels = [data['label'] for data in inputs]
     lengths = [data['length'] for data in inputs]
     raw_text = [data['raw_text'] for data in inputs]
     encoded_text = [data['encoded_text'] for data in inputs]
     text_lengths = [data['text_length'] for data in inputs]
-    padded_feats = rnn.pad_sequence(feats, batch_first=True)
+    # padded_feats = rnn.pad_sequence(feats, batch_first=True)
     padded_text = rnn.pad_sequence(encoded_text, batch_first=True)
     labels = torch.tensor(labels, dtype=torch.long)
     lengths = torch.tensor(lengths, dtype=torch.long)
