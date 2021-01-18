@@ -45,7 +45,7 @@ class ExperimentRunnerTriplet(ExperimentRunnerBase):
                                 num_layers=args.num_enc_layers,
                                 num_classes=num_classes,
                                 encoder_dim=args.enc_dim,#128
-                                bert_pretrained=not args.bert_random_init,
+                                bert_pretrained=not args.bert_random_init, # == True (not False) in default, true
                                 bert_pretrained_model_name=args.bert_model_name,
                                 config=args)
                                 
@@ -69,7 +69,7 @@ class ExperimentRunnerTriplet(ExperimentRunnerBase):
         # Define the optimizers
         self.optimizer = torch.optim.Adam([
             {'params': self.model.bert.parameters(), 'lr':args.learning_rate_bert},
-            {'params': self.model.speech_encoder.parameters()},
+            {'params': self.model.lugosch_model.parameters()}, # replace speech_encoder with lugosch_model
             {'params': self.model.classifier.parameters()}
         ], lr=args.learning_rate)
 

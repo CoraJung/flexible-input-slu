@@ -80,7 +80,7 @@ def parse():
                         help="Use multiple GPUs for training")
 
     parser.add_argument("--bert-random-init",
-                        action='store_true',
+                        action='store_true', #default value of false
                         help="Use a randomly initialized BERT model")
 
     parser.add_argument("--num-workers",
