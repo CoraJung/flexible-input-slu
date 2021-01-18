@@ -364,11 +364,12 @@ class PretrainedModel(torch.nn.Module):
 		# out = x.unsqueeze(1) 
 		out = x # audio feats(x) is already 3D (no need to unsqueeze)
 		for layer in self.phoneme_layers:
-			print(f"input to the layer in compute_features(): {out.size()}")
+			print(f"input to the phoneme layer in compute_features(): {out.size()}")
 			out = layer(out)
 		print(f"Phoneme embedding: {out.size()}")
 
 		for layer in self.word_layers:
+			print(f"input to the word layer in compute_features(): {out.size()}")
 			out = layer(out)
 
 		return out

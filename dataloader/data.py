@@ -27,10 +27,10 @@ import os
 class BaseDataset(Dataset):
 
     def load_audio(self, idx):
-        df_row = self.df.iloc[idx]
-        filename = os.path.join(self.data_root, df_row['path'])
-        waveform, sample_rate = torchaudio.load(filename)
-        fbank_feats = torchaudio.compliance.kaldi.mfcc(waveform, num_ceps=40, num_mel_bins=80)
+        # df_row = self.df.iloc[idx]
+        # filename = os.path.join(self.data_root, df_row['path'])
+        # waveform, sample_rate = torchaudio.load(filename)
+        # fbank_feats = torchaudio.compliance.kaldi.mfcc(waveform, num_ceps=40, num_mel_bins=80)
         # fbank_feats = fbank_feats.numpy()
 
         #-----------------------------------------------------------
@@ -42,13 +42,16 @@ class BaseDataset(Dataset):
         effect.set_input_file(wav_path)
         wav, fs = effect.sox_build_flow_effects()
         
-        # x = wav[0].numpy()
-        x = wav[0]
-        # if idx == 1:
-        print(f"lugosch audio features are: {x.size()}")
-        print(f"lugosch audio feature contents: {x}")
-        print(f"features extracted from kaldi mfcc: {fbank_feats.size()}")
-        print(f"feature contents extracted from kaldi mfcc: {fbank_feats}")
+        x = wav[0].numpy()
+        fbank_feats = x
+        print(f"features extracted from lugosch sox: {fbank_feats.size()}")
+        print(f"feature contents extracted from lugosch sox: {fbank_feats}")
+        # x = wav[0]
+        if idx == 1:
+            print(f"lugosch audio features are: {x.size()}")
+            print(f"lugosch audio feature contents: {x}")
+            print(f"features extracted from kaldi mfcc: {fbank_feats.size()}")
+            print(f"feature contents extracted from kaldi mfcc: {fbank_feats}")
         #-------------------------------------------------------------
         intent = df_row['intent_label']
         encoding = self.bert_tokenizer.encode_plus(
@@ -57,6 +60,7 @@ class BaseDataset(Dataset):
             return_token_type_ids=False,
             return_tensors='pt'
             )
+        
         return fbank_feats, intent, encoding, df_row['transcription']
 
     def get_dict(self, fbank_feats, intent, encoding, transcription, suffix=''):
