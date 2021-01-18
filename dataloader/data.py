@@ -27,7 +27,7 @@ import os
 class BaseDataset(Dataset):
 
     def load_audio(self, idx):
-        # df_row = self.df.iloc[idx]
+        df_row = self.df.iloc[idx]
         # filename = os.path.join(self.data_root, df_row['path'])
         # waveform, sample_rate = torchaudio.load(filename)
         # fbank_feats = torchaudio.compliance.kaldi.mfcc(waveform, num_ceps=40, num_mel_bins=80)
