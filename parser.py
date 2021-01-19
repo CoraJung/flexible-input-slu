@@ -27,6 +27,14 @@ def parse():
                         choices=['fsc', 'snips'],
                         default='fsc',
                         help="The dataset to use")
+    
+    # parser.add_argument("--num_classes",
+    #                     type=int,
+    #                     help="Number of classes that a dataset predicts")
+
+    parser.add_argument("--data_path",
+                        type=str,
+                        help="Path to the data folder containing data csvs")
 
     parser.add_argument("--experiment",
                         default="experiments.experiment_triplet.ExperimentRunnerTriplet",

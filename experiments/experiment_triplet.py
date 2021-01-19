@@ -24,21 +24,29 @@ class ExperimentRunnerTriplet(ExperimentRunnerBase):
     def __init__(self, args):
         super().__init__(args)
 
-        # Get the correct dataset directory
+        # Get the dataset directory
+        if args.data_path:
+            data_dir = args.data_path
+        else:
+            raise ValueError("No data path was given!")
+
+        # # Get the correct dataset directory
         if args.dataset == 'fsc':
             ### Edit by Sue (01/04/2021) ########################################################################
             # data_dir = 'fluent'
-            data_dir = '/misc/vlgscratch5/PichenyGroup/s2i-common/end-to-end-SLU/fluent_speech_commands_dataset'
+            # data_dir = '/misc/vlgscratch5/PichenyGroup/s2i-common/end-to-end-SLU/fluent_speech_commands_dataset'
             #####################################################################################################
             num_classes = 31
         elif args.dataset == 'snips':
             ### Edit by Wendy (01/10/2021) ########################################################################
             # data_dir = 'snips_slu'
-            data_dir = '/misc/vlgscratch5/PichenyGroup/s2i-common/end-to-end-SLU/snips'
+            # data_dir = '/misc/vlgscratch5/PichenyGroup/s2i-common/end-to-end-SLU/snips'
             #####################################################################################################
             num_classes = 6
         else:
             raise ValueError("No valid dataset selected!")
+
+        print(f"the dataset we are using is: {args.dataset}")
 
         # Define the joint model
         self.model = JointModel(input_dim=40,
