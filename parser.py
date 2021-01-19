@@ -27,6 +27,14 @@ def parse():
                         choices=['fsc', 'snips'],
                         default='fsc',
                         help="The dataset to use")
+    
+    # parser.add_argument("--num_classes",
+    #                     type=int,
+    #                     help="Number of classes that a dataset predicts")
+
+    parser.add_argument("--data_path",
+                        type=str,
+                        help="Path to the data folder containing data csvs")
 
     parser.add_argument("--experiment",
                         default="experiments.experiment_triplet.ExperimentRunnerTriplet",
@@ -80,7 +88,7 @@ def parse():
                         help="Use multiple GPUs for training")
 
     parser.add_argument("--bert-random-init",
-                        action='store_true',
+                        action='store_true', #default value of false
                         help="Use a randomly initialized BERT model")
 
     parser.add_argument("--num-workers",
@@ -118,7 +126,7 @@ def parse():
                         help="Number of encoder LSTM layers")
 
     parser.add_argument("--enc-dim",
-                        default=128,#original 512
+                        default=256,#original 512
                         type=int,
                         help="Hidden dimension of encoder LSTM")
 

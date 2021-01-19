@@ -24,28 +24,36 @@ class ExperimentRunnerTriplet(ExperimentRunnerBase):
     def __init__(self, args):
         super().__init__(args)
 
-        # Get the correct dataset directory
+        # Get the dataset directory
+        if args.data_path:
+            data_dir = args.data_path
+        else:
+            raise ValueError("No data path was given!")
+
+        # # Get the correct dataset directory
         if args.dataset == 'fsc':
             ### Edit by Sue (01/04/2021) ########################################################################
             # data_dir = 'fluent'
-            data_dir = '/misc/vlgscratch5/PichenyGroup/s2i-common/end-to-end-SLU/fluent_speech_commands_dataset'
+            # data_dir = '/misc/vlgscratch5/PichenyGroup/s2i-common/end-to-end-SLU/fluent_speech_commands_dataset'
             #####################################################################################################
             num_classes = 31
         elif args.dataset == 'snips':
             ### Edit by Wendy (01/10/2021) ########################################################################
             # data_dir = 'snips_slu'
-            data_dir = '/misc/vlgscratch5/PichenyGroup/s2i-common/end-to-end-SLU/snips'
+            # data_dir = '/misc/vlgscratch5/PichenyGroup/s2i-common/end-to-end-SLU/snips'
             #####################################################################################################
             num_classes = 6
         else:
             raise ValueError("No valid dataset selected!")
+
+        print(f"the dataset we are using is: {args.dataset}")
 
         # Define the joint model
         self.model = JointModel(input_dim=40,
                                 num_layers=args.num_enc_layers,
                                 num_classes=num_classes,
                                 encoder_dim=args.enc_dim,#128
-                                bert_pretrained=not args.bert_random_init,
+                                bert_pretrained=not args.bert_random_init, # == True (not False) in default, true
                                 bert_pretrained_model_name=args.bert_model_name,
                                 config=args)
                                 
@@ -69,7 +77,7 @@ class ExperimentRunnerTriplet(ExperimentRunnerBase):
         # Define the optimizers
         self.optimizer = torch.optim.Adam([
             {'params': self.model.bert.parameters(), 'lr':args.learning_rate_bert},
-            {'params': self.model.speech_encoder.parameters()},
+            {'params': self.model.lugosch_model.parameters()}, # replace speech_encoder with lugosch_model
             {'params': self.model.classifier.parameters()}
         ], lr=args.learning_rate)
 

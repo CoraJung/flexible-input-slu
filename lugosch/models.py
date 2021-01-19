@@ -294,7 +294,7 @@ class PretrainedModel(torch.nn.Module):
 
 		self.word_layers = torch.nn.ModuleList(self.word_layers)
 		self.word_linear = torch.nn.Linear(out_dim, config.vocabulary_size)
-		self.pretraining_type = config.pretraining_type
+		self.pretraining_type = 2 # config.pretraining_type
 		if self.is_cuda:
 			self.cuda()
 
@@ -361,12 +361,15 @@ class PretrainedModel(torch.nn.Module):
 		if self.is_cuda:
 			x = x.cuda()
 
-		out = x.unsqueeze(1)
+		out = x.unsqueeze(1) 
+		# out = x
 		for layer in self.phoneme_layers:
+			# print(f"input to the phoneme layer in compute_features(): {out.size()}")
 			out = layer(out)
-		print(f"Phoneme embedding: {out.size()}")
+		# print(f"Phoneme embedding: {out.size()}")
 
 		for layer in self.word_layers:
+			# print(f"input to the word layer in compute_features(): {out.size()}")
 			out = layer(out)
 
 		return out

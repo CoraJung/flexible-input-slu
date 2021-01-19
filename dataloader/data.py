@@ -28,9 +28,9 @@ class BaseDataset(Dataset):
 
     def load_audio(self, idx):
         df_row = self.df.iloc[idx]
-        filename = os.path.join(self.data_root, df_row['path'])
-        waveform, sample_rate = torchaudio.load(filename)
-        fbank_feats = torchaudio.compliance.kaldi.mfcc(waveform, num_ceps=40, num_mel_bins=80)
+        # filename = os.path.join(self.data_root, df_row['path'])
+        # waveform, sample_rate = torchaudio.load(filename)
+        # fbank_feats = torchaudio.compliance.kaldi.mfcc(waveform, num_ceps=40, num_mel_bins=80)
         # fbank_feats = fbank_feats.numpy()
 
         #-----------------------------------------------------------
@@ -42,13 +42,15 @@ class BaseDataset(Dataset):
         effect.set_input_file(wav_path)
         wav, fs = effect.sox_build_flow_effects()
         
-        # x = wav[0].numpy()
-        x = wav[0]
-        if idx == 1:
-            print(f"lugosch audio features are: {x.size()}")
-            print(f"lugosch audio feature contents: {x}")
-            print(f"features extracted from kaldi mfcc: {fbank_feats.size()}")
-            print(f"feature contents extracted from kaldi mfcc: {fbank_feats}")
+        x = wav[0].numpy()
+        fbank_feats = x
+        # print(f"feature contents extracted from lugosch sox: {fbank_feats}")
+        # x = wav[0]
+        # if idx == 1:
+        #     print(f"lugosch audio features are: {x.size()}")
+        #     print(f"lugosch audio feature contents: {x}")
+        #     print(f"features extracted from kaldi mfcc: {fbank_feats.size()}")
+        #     print(f"feature contents extracted from kaldi mfcc: {fbank_feats}")
         #-------------------------------------------------------------
         intent = df_row['intent_label']
         encoding = self.bert_tokenizer.encode_plus(
@@ -57,6 +59,7 @@ class BaseDataset(Dataset):
             return_token_type_ids=False,
             return_tensors='pt'
             )
+        
         return fbank_feats, intent, encoding, df_row['transcription']
 
     def get_dict(self, fbank_feats, intent, encoding, transcription, suffix=''):
@@ -314,13 +317,30 @@ def default_collate_triplet(inputs):
         'length': (B,) length of each utterance
         'label': (B,) label of each utterance
     '''
-    feats = [data['feats'] for data in inputs]
+    # ---------------------------------------------
+    # lugosch collatewavsSLU from data.py incorporated
+    x = []
+
+    for data in inputs:
+        x_ = data['feats']
+        x.append(torch.tensor(x_).float())
+
+    # pad all sequences to have same length
+    T = max([len(x_) for x_ in x])
+    for index in range(len(x)): #le(x) == batchsize
+        x_pad_length = (T - len(x[index]))
+        x[index] = torch.nn.functional.pad(x[index], (0,x_pad_length))
+
+    x = torch.stack(x)
+    padded_feats = x
+    # ---------------------------------------------
+    # feats = [data['feats'] for data in inputs]
     labels = [data['label'] for data in inputs]
     lengths = [data['length'] for data in inputs]
     raw_text = [data['raw_text'] for data in inputs]
     encoded_text = [data['encoded_text'] for data in inputs]
     text_lengths = [data['text_length'] for data in inputs]
-    padded_feats = rnn.pad_sequence(feats, batch_first=True)
+    # padded_feats = rnn.pad_sequence(feats, batch_first=True)
     padded_text = rnn.pad_sequence(encoded_text, batch_first=True)
     labels = torch.tensor(labels, dtype=torch.long)
     lengths = torch.tensor(lengths, dtype=torch.long)
