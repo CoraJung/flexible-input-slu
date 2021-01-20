@@ -49,14 +49,20 @@ class ExperimentRunnerTriplet(ExperimentRunnerBase):
         print(f"the dataset we are using is: {args.dataset}")
 
         # Define the joint model
+        # self.model = JointModel(input_dim=40,
+        #                         num_layers=args.num_enc_layers,
+        #                         num_classes=num_classes,
+        #                         encoder_dim=args.enc_dim,#128
+        #                         bert_pretrained=not args.bert_random_init, # == True (not False) in default, true
+        #                         bert_pretrained_model_name=args.bert_model_name,
+        #                         config=args)
         self.model = JointModel(input_dim=40,
-                                num_layers=args.num_enc_layers,
-                                num_classes=num_classes,
-                                encoder_dim=args.enc_dim,#128
-                                bert_pretrained=not args.bert_random_init, # == True (not False) in default, true
-                                bert_pretrained_model_name=args.bert_model_name,
-                                config=args)
-                                
+                            num_layers=args.num_enc_layers,
+                            num_classes=num_classes,
+                            encoder_dim=args.enc_dim,#128
+                            bert_pretrained=not args.bert_random_init, # == True (not False) in default, true
+                            bert_pretrained_model_name=args.bert_model_name)
+
         print(self.model)
 
         # Set the Device and Distributed Settings

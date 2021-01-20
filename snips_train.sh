@@ -23,6 +23,6 @@ DATA_PATH=//misc/vlgscratch5/PichenyGroup/s2i-common/alexa-slu/snips_slu/
 DATASET=snips
 
 # Execute the script
-python train.py --dataset=$DATASET --data_path=$DATA_PATH
+python train.py --dataset=$DATASET --data_path=$DATA_PATH --enc-dim=512
 
 # And we're done!
