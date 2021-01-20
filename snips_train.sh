@@ -24,7 +24,7 @@ DATASET=snips
 EXPERIMENT=experiments.experiment_triplet_original.ExperimentRunnerTriplet
 
 # Execute the script
-# python dataprep/prepare_snips.py
+python dataprep/prepare_snips.py
 python train.py --dataset=$DATASET --data_path=$DATA_PATH --enc-dim=512 --experiment=$EXPERIMENT
 
 # And we're done!
