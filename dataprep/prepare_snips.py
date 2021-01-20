@@ -19,7 +19,7 @@ from sklearn.model_selection import train_test_split
 import json
 
 
-data_root = 'snips_slu'
+data_root = '/misc/vlgscratch5/PichenyGroup/s2i-common/alexa-slu/snips_slu'
 df = pd.read_csv(os.path.join(data_root, 'data/complete.csv'))
 
 # new_paths = [os.path.join('wavs', 'audio', os.path.basename(path)) for path in df['path']]
@@ -34,7 +34,7 @@ intent_text_list = [semantics[12:].split("'")[0] for semantics in df['semantics'
 # intent_labels_list = [intent_label_dict[intent_text] for intent_text in intent_text_list]
 
 df['intent'] = intent_text_list
-# df['intent_label'] = intent_labels_list
+# df['intent_label'] = intent_labels_list 
 
 # Split dataset into 80-10-10 train/dev/test
 df_train, df_valtest = train_test_split(df, test_size=0.2, random_state=42)
