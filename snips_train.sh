@@ -21,9 +21,10 @@ module load anaconda3
 source activate alexa_env
 DATA_PATH=//misc/vlgscratch5/PichenyGroup/s2i-common/alexa-slu/snips_slu/
 DATASET=snips
+EXPERIMENT=experiments.experiment_triplet_original.ExperimentRunnerTriplet
 
 # Execute the script
-python dataprep/prepare_snips.py
-python train.py --dataset=$DATASET --data_path=$DATA_PATH --enc-dim=512
+# python dataprep/prepare_snips.py
+python train.py --dataset=$DATASET --data_path=$DATA_PATH --enc-dim=512 --experiment=$EXPERIMENT
 
 # And we're done!
