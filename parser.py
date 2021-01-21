@@ -230,5 +230,9 @@ def parse():
     parser.add_argument("--libri_folder",
                         default="/misc/vlgscratch5/PichenyGroup/s2i-common/alexa-slu/config")
 
+    parser.add_argument("--unfreezing_type",
+                        default=2,
+                        help="0: No Unfreezing (freeze all), 1: Unfreeze Word, 2: Unfreeze All")
+
     args = parser.parse_args()
     return args
