@@ -108,7 +108,6 @@ class JointModel(nn.Module):
 #         else:
 #             self.speech_encoder = SubsampledBiLSTMEncoder(input_dim=input_dim, encoder_dim=encoder_dim, num_layers=num_layers)
 
- 
         self.aux_embedding = nn.Linear(config.enc_dim, self.bert.config.hidden_size) #bert_hidden_size = 768 enc_dim = 128
         self.lugosch_model = lugosch.models.PretrainedModel(config)
 
@@ -118,7 +117,7 @@ class JointModel(nn.Module):
 
         # freeze phoneme and word layers 
         self.freeze_all_layers()
-
+        self.unfreezing_index = 1
         self.maxpool = MaskedMaxPool()
         self.classifier = nn.Linear(self.bert.config.hidden_size, num_classes)
 
