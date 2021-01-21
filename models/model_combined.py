@@ -172,79 +172,79 @@ class JointModel(nn.Module):
 
     # functions below are adopted from lugosch models.py
     def freeze_all_layers(self):
-		for layer in self.lugosch_model.phoneme_layers:
-			freeze_layer(layer)
-		for layer in self.lugosch_model.word_layers:
-			freeze_layer(layer)
+        for layer in self.lugosch_model.phoneme_layers:
+            freeze_layer(layer)
+        for layer in self.lugosch_model.word_layers:
+            freeze_layer(layer)
     
     def print_frozen(self):
-		for layer in self.lugosch_model.phoneme_layers:
-			if has_params(layer):
-				frozen = "frozen" if is_frozen(layer) else "unfrozen"
-				print(layer.name + ": " + frozen)
-		for layer in self.lugosch_model.word_layers:
-			if has_params(layer):
-				frozen = "frozen" if is_frozen(layer) else "unfrozen"
-				print(layer.name + ": " + frozen)
+        for layer in self.lugosch_model.phoneme_layers:
+            if has_params(layer):
+                frozen = "frozen" if is_frozen(layer) else "unfrozen"
+                print(layer.name + ": " + frozen)
+        for layer in self.lugosch_model.word_layers:
+            if has_params(layer):
+                frozen = "frozen" if is_frozen(layer) else "unfrozen"
+                print(layer.name + ": " + frozen)
 
-	def unfreeze_one_layer(self):
-		"""
-		ULMFiT-style unfreezing:
-			Unfreeze the next trainable layer
-		"""
-		# no unfreezing
-		if self.config.unfreezing_type == 0:
-			return
+    def unfreeze_one_layer(self):
+        """
+        ULMFiT-style unfreezing:
+            Unfreeze the next trainable layer
+        """
+        # no unfreezing
+        if self.config.unfreezing_type == 0:
+            return
 
-		if self.config.unfreezing_type == 1:
-			trainable_index = 0 # which trainable layer
-			global_index = 1 # which layer overall
-			while global_index <= len(self.lugosch_model.word_layers):
-				layer = self.lugosch_model.word_layers[-global_index]
-				unfreeze_layer(layer)
-				if has_params(layer): trainable_index += 1
-				global_index += 1
-				if trainable_index == self.unfreezing_index: 
-					self.unfreezing_index += 1
-					return
+        if self.config.unfreezing_type == 1:
+            trainable_index = 0 # which trainable layer
+            global_index = 1 # which layer overall
+            while global_index <= len(self.lugosch_model.word_layers):
+                layer = self.lugosch_model.word_layers[-global_index]
+                unfreeze_layer(layer)
+                if has_params(layer): trainable_index += 1
+                global_index += 1
+                if trainable_index == self.unfreezing_index: 
+                    self.unfreezing_index += 1
+                    return
 
-		if self.config.unfreezing_type == 2:
-			trainable_index = 0 # which trainable layer
-			global_index = 1 # which layer overall
-			while global_index <= len(self.lugosch_model.word_layers):
-				layer = self.lugosch_model.word_layers[-global_index]
-				unfreeze_layer(layer)
-				if has_params(layer): trainable_index += 1
-				global_index += 1
-				if trainable_index == self.unfreezing_index: 
-					self.unfreezing_index += 1
-					return
+        if self.config.unfreezing_type == 2:
+            trainable_index = 0 # which trainable layer
+            global_index = 1 # which layer overall
+            while global_index <= len(self.lugosch_model.word_layers):
+                layer = self.lugosch_model.word_layers[-global_index]
+                unfreeze_layer(layer)
+                if has_params(layer): trainable_index += 1
+                global_index += 1
+                if trainable_index == self.unfreezing_index: 
+                    self.unfreezing_index += 1
+                    return
 
-			global_index = 1
-			while global_index <= len(self.lugosch_model.phoneme_layers):
-				layer = self.lugosch_model.phoneme_layers[-global_index]
-				unfreeze_layer(layer)
-				if has_params(layer): trainable_index += 1
-				global_index += 1
-				if trainable_index == self.unfreezing_index:
-					self.unfreezing_index += 1
-					return
+            global_index = 1
+            while global_index <= len(self.lugosch_model.phoneme_layers):
+                layer = self.lugosch_model.phoneme_layers[-global_index]
+                unfreeze_layer(layer)
+                if has_params(layer): trainable_index += 1
+                global_index += 1
+                if trainable_index == self.unfreezing_index:
+                    self.unfreezing_index += 1
+                    return
 
 # codes from lugosch models.py
 def freeze_layer(layer):
-	for param in layer.parameters():
-		param.requires_grad = False
+    for param in layer.parameters():
+        param.requires_grad = False
 
 def unfreeze_layer(layer):
-	for param in layer.parameters():
-		param.requires_grad = True
+    for param in layer.parameters():
+        param.requires_grad = True
 
 def has_params(layer):
-	num_params = sum([p.numel() for p in layer.parameters()])
-	if num_params > 0: return True
-	return False
+    num_params = sum([p.numel() for p in layer.parameters()])
+    if num_params > 0: return True
+    return False
 
 def is_frozen(layer):
-	for param in layer.parameters():
-		if param.requires_grad: return False
-	return True
+    for param in layer.parameters():
+        if param.requires_grad: return False
+    return True
