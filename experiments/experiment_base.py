@@ -54,8 +54,11 @@ class ExperimentRunnerBase:
         avg_train_loss = AverageMeter()
         avg_train_acc = AverageMeter()
         best_val_acc = -np.inf
-
+    
         for epoch in range(self.num_epochs):
+
+            self.model.print_frozen()
+
             avg_train_loss.reset()
             avg_train_acc.reset()
 
@@ -109,6 +112,8 @@ class ExperimentRunnerBase:
                     # Log data to
                     self.writer.add_scalar('Train/loss', train_loss.item(), step)
                     self.writer.add_scalar('Train/acc', train_acc, step)
+        
+            self.model.unfreeze_one_layer()
 
     def compute_loss(self, batch):
         """ This function is specific to the kind of model we are training and must be implemented """
