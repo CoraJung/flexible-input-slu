@@ -194,14 +194,18 @@ class JointModel(nn.Module):
             Unfreeze the next trainable layer
         """
         # no unfreezing
+        print("self.config.unfreezing_type: ", self.config.unfreezing_type)
+        
         if self.config.unfreezing_type == 0:
             return
 
         if self.config.unfreezing_type == 1:
             trainable_index = 0 # which trainable layer
             global_index = 1 # which layer overall
+            print("Len of self.lugosch_model.word_layers:", len(self.lugosch_model.word_layers))
             while global_index <= len(self.lugosch_model.word_layers):
                 layer = self.lugosch_model.word_layers[-global_index]
+                print("lugosch_model.word_layers[-global_index]:", layer)
                 unfreeze_layer(layer)
                 if has_params(layer): trainable_index += 1
                 global_index += 1
