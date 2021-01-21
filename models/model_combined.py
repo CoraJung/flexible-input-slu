@@ -92,7 +92,6 @@ class BertNLU(nn.Module):
         logits = self.classifier(pooled_output)
         return logits
 
-
 class JointModel(nn.Module):
     """JointModel which combines both modalities"""
     """Replace Alexa's audio embedding with Lugosch's word embeddings"""
@@ -112,10 +111,14 @@ class JointModel(nn.Module):
  
         self.aux_embedding = nn.Linear(config.enc_dim, self.bert.config.hidden_size) #bert_hidden_size = 768 enc_dim = 128
         self.lugosch_model = lugosch.models.PretrainedModel(config)
+
         pretrained_model_path = os.path.join(config.libri_folder, "libri_pretraining", "model_state.pth")
         
         self.lugosch_model.load_state_dict(torch.load(pretrained_model_path))
-            
+
+        # freeze phoneme and word layers 
+        self.freeze_all_layers()
+
         self.maxpool = MaskedMaxPool()
         self.classifier = nn.Linear(self.bert.config.hidden_size, num_classes)
 
@@ -167,3 +170,82 @@ class JointModel(nn.Module):
         # print(f"text_embedding: {text_embedding.size()}, text_logits: {text_logits.size()}")
         outputs['text_embed'], outputs['text_logits'] = text_embedding, text_logits
         return outputs 
+
+    # functions below are adopted from lugosch models.py
+    def freeze_all_layers(self):
+		for layer in self.lugosch_model.phoneme_layers:
+			freeze_layer(layer)
+		for layer in self.lugosch_model.word_layers:
+			freeze_layer(layer)
+    
+    def print_frozen(self):
+		for layer in self.lugosch_model.phoneme_layers:
+			if has_params(layer):
+				frozen = "frozen" if is_frozen(layer) else "unfrozen"
+				print(layer.name + ": " + frozen)
+		for layer in self.lugosch_model.word_layers:
+			if has_params(layer):
+				frozen = "frozen" if is_frozen(layer) else "unfrozen"
+				print(layer.name + ": " + frozen)
+
+	def unfreeze_one_layer(self):
+		"""
+		ULMFiT-style unfreezing:
+			Unfreeze the next trainable layer
+		"""
+		# no unfreezing
+		if self.config.unfreezing_type == 0:
+			return
+
+		if self.config.unfreezing_type == 1:
+			trainable_index = 0 # which trainable layer
+			global_index = 1 # which layer overall
+			while global_index <= len(self.lugosch_model.word_layers):
+				layer = self.lugosch_model.word_layers[-global_index]
+				unfreeze_layer(layer)
+				if has_params(layer): trainable_index += 1
+				global_index += 1
+				if trainable_index == self.unfreezing_index: 
+					self.unfreezing_index += 1
+					return
+
+		if self.config.unfreezing_type == 2:
+			trainable_index = 0 # which trainable layer
+			global_index = 1 # which layer overall
+			while global_index <= len(self.lugosch_model.word_layers):
+				layer = self.lugosch_model.word_layers[-global_index]
+				unfreeze_layer(layer)
+				if has_params(layer): trainable_index += 1
+				global_index += 1
+				if trainable_index == self.unfreezing_index: 
+					self.unfreezing_index += 1
+					return
+
+			global_index = 1
+			while global_index <= len(self.lugosch_model.phoneme_layers):
+				layer = self.lugosch_model.phoneme_layers[-global_index]
+				unfreeze_layer(layer)
+				if has_params(layer): trainable_index += 1
+				global_index += 1
+				if trainable_index == self.unfreezing_index:
+					self.unfreezing_index += 1
+					return
+
+# codes from lugosch models.py
+def freeze_layer(layer):
+	for param in layer.parameters():
+		param.requires_grad = False
+
+def unfreeze_layer(layer):
+	for param in layer.parameters():
+		param.requires_grad = True
+
+def has_params(layer):
+	num_params = sum([p.numel() for p in layer.parameters()])
+	if num_params > 0: return True
+	return False
+
+def is_frozen(layer):
+	for param in layer.parameters():
+		if param.requires_grad: return False
+	return True
