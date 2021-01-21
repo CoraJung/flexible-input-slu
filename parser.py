@@ -28,11 +28,11 @@ def parse():
                         default='fsc',
                         help="The dataset to use")
     
-    # parser.add_argument("--num_classes",
+    # parser.add_argument("--num-classes",
     #                     type=int,
     #                     help="Number of classes that a dataset predicts")
 
-    parser.add_argument("--data_path",
+    parser.add_argument("--data-path",
                         type=str,
                         help="Path to the data folder containing data csvs")
 
