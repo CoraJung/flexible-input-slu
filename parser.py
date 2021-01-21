@@ -70,7 +70,7 @@ def parse():
                         default=50,
                         help="Validate model every n steps`")
 
-    parser.add_argument("--save_every",
+    parser.add_argument("--save-every",
                         type=int,
                         default=500,
                         help="Save model every n steps`")
@@ -156,81 +156,81 @@ def parse():
                         help="Checkpoint path to be used for testing.")
 
     ### Lugosch's Parser ###
-    parser.add_argument("--use_sincnet",
+    parser.add_argument("--use-sincnet",
                         default=True)
 
     parser.add_argument("--fs",
                         default=16000)
 
-    parser.add_argument("--cnn_N_filt",
+    parser.add_argument("--cnn-N-filt",
                         nargs="+",
                         default=[80,60,60])
 
-    parser.add_argument("--cnn_len_filt",
+    parser.add_argument("--cnn-len-filt",
                         nargs="+",
                         default=[401,5,5])
 
-    parser.add_argument("--cnn_stride",
+    parser.add_argument("--cnn-stride",
                         nargs="+",
                         default=[80,1,1])
 
-    parser.add_argument("--cnn_max_pool_len",
+    parser.add_argument("--cnn-max-pool-len",
                         nargs="+",
                         default=[2,1,1])
 
-    parser.add_argument("--cnn_act",
+    parser.add_argument("--cnn-act",
                         nargs="+",
                         default=["leaky_relu","leaky_relu","leaky_relu"])
 
-    parser.add_argument("--cnn_drop",
+    parser.add_argument("--cnn-drop",
                         nargs="+",
                         default=[0.0,0.0,0.0])
 
-    parser.add_argument("--phone_rnn_num_hidden",
+    parser.add_argument("--phone-rnn-num-hidden",
                         nargs="+",
                         default=[128,128])
 
-    parser.add_argument("--phone_downsample_len",
+    parser.add_argument("--phone-downsample-len",
                         nargs="+",
                         default=[2,2])
 
-    parser.add_argument("--phone_downsample_type",
+    parser.add_argument("--phone-downsample-type",
                         nargs="+",
                         default=["avg","avg"])
 
-    parser.add_argument("--phone_rnn_drop",
+    parser.add_argument("--phone-rnn-drop",
                         nargs="+",
                         default=[0.5,0.5])
 
-    parser.add_argument("--phone_rnn_bidirectional",
+    parser.add_argument("--phone-rnn-bidirectional",
                         default=True)
 
-    parser.add_argument("--word_rnn_num_hidden",
+    parser.add_argument("--word-rnn-num-hidden",
                         nargs="+",
                         default=[128,128])
 
-    parser.add_argument("--word_downsample_len",
+    parser.add_argument("--word-downsample-len",
                         nargs="+",
                         default=[2,2])
 
-    parser.add_argument("--word_downsample_type",
+    parser.add_argument("--word-downsample-type",
                         nargs="+",
                         default=["avg","avg"])
 
-    parser.add_argument("--word_rnn_drop",
+    parser.add_argument("--word-rnn-drop",
                         nargs="+",
                         default=[0.5,0.5])
 
-    parser.add_argument("--word_rnn_bidirectional",
+    parser.add_argument("--word-rnn-bidirectional",
                         default=True)
 
-    parser.add_argument("--vocabulary_size",
+    parser.add_argument("--vocabulary-size",
                         default=10000)
 
-    parser.add_argument("--libri_folder",
+    parser.add_argument("--libri-folder",
                         default="/misc/vlgscratch5/PichenyGroup/s2i-common/alexa-slu/config")
 
-    parser.add_argument("--unfreezing_type",
+    parser.add_argument("--unfreezing-type",
                         default=2,
                         help="0: No Unfreezing (freeze all), 1: Unfreeze Word, 2: Unfreeze All")
 
