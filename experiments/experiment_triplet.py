@@ -75,6 +75,10 @@ class ExperimentRunnerTriplet(ExperimentRunnerBase):
             {'params': self.model.classifier.parameters()}
         ], lr=args.learning_rate)
 
+        for name, param in model.lugosch_model.parameters():
+            if param.requires_grad:
+                print(f"--------------------lugosch model param require_grad is True with {name} --------------------")
+
         # Parameters for the losses
         self.weight_text = args.weight_text
         self.weight_embedding = args.weight_embedding
