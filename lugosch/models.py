@@ -338,6 +338,8 @@ class PretrainedModel(torch.nn.Module):
 			valid_word_indices = y_word!=-1
 			word_acc = (word_logits.max(1)[1][valid_word_indices] == y_word[valid_word_indices]).float().mean()
 
+			print("------------------------this is in forward function in pretrainmodel class------------------")
+
 		return phoneme_loss, word_loss, phoneme_acc, word_acc
 
 	def compute_posteriors(self, x):
