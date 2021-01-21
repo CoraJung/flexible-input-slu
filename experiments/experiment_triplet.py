@@ -75,8 +75,8 @@ class ExperimentRunnerTriplet(ExperimentRunnerBase):
             {'params': self.model.classifier.parameters()}
         ], lr=args.learning_rate)
 
-	print("------lugosch_model.parameters():--------")
-	print(self.model.lugosch_model.parameters())
+        print("------lugosch_model.parameters():--------")
+        print(self.model.lugosch_model.parameters())
 
         for param in self.model.lugosch_model.parameters():
             if param.requires_grad:
