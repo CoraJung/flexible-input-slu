@@ -114,6 +114,7 @@ class JointModel(nn.Module):
         pretrained_model_path = os.path.join(config.libri_folder, "libri_pretraining", "model_state.pth")
         
         self.lugosch_model.load_state_dict(torch.load(pretrained_model_path))
+        self.config = config
 
         # freeze phoneme and word layers 
         self.freeze_all_layers()
