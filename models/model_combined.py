@@ -241,8 +241,8 @@ class JointModel(nn.Module):
 
             #audio_logits = self.classifier(audio_embedding)
             for layer in self.lugosch_classifier:
-				audio_hiddens = layer(audio_hiddens)
-			audio_logits = audio_hiddens # 3D
+                audio_hiddens = layer(audio_hiddens)
+            audio_logits = audio_hiddens # 3D
             
             print(f"audio logits: {audio_logits.size()}")
             outputs['audio_embed'], outputs['audio_logits'] = audio_embedding, audio_logits
@@ -260,8 +260,8 @@ class JointModel(nn.Module):
             
             #text_logits = self.classifier(text_embedding)
             for layer in self.lugosch_classifier:
-				bert_hiddens = layer(bert_hiddens)
-			text_logits = bert_hiddens # 3D
+                bert_hiddens = layer(bert_hiddens)
+            text_logits = bert_hiddens # 3D
             
             print(f"text logits: {text_logits.size()}")
             outputs['text_embed'], outputs['text_logits'] = text_embedding, text_logits
@@ -282,8 +282,8 @@ class JointModel(nn.Module):
         
         #text_logits = self.classifier(text_embedding)
         for layer in self.lugosch_classifier:
-			bert_hiddens = layer(bert_hiddens)
-		text_logits = bert_hiddens # 3D
+                bert_hiddens = layer(bert_hiddens)
+        text_logits = bert_hiddens # 3D
         
         # print(f"text_embedding: {text_embedding.size()}, text_logits: {text_logits.size()}")
         outputs['text_embed'], outputs['text_logits'] = text_embedding, text_logits
