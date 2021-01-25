@@ -161,6 +161,7 @@ class JointModel(nn.Module):
 #             self.speech_encoder = SubsampledBiLSTMEncoder(input_dim=input_dim, encoder_dim=encoder_dim, num_layers=num_layers)
 
         self.aux_embedding = nn.Linear(config.enc_dim, self.bert.config.hidden_size) #bert_hidden_size = 768 enc_dim = 128
+        self.aux_reverse = nn.Linear(self.bert.config.hidden_size, config.enc_dim) #match bert hidden size with Lugosch's
         self.lugosch_model = lugosch.models.PretrainedModel(config)
 
         pretrained_model_path = os.path.join(config.libri_folder, "libri_pretraining", "model_state.pth")
@@ -184,6 +185,8 @@ class JointModel(nn.Module):
             self.out_dim *= 2 
         for idx in range(self.num_rnn_layers):
             # recurrent
+            print("config.intent_rnn_bidirectional :",config.intent_rnn_bidirectional)
+            
             layer = torch.nn.GRU(input_size=self.out_dim, hidden_size=config.intent_rnn_num_hidden[idx], batch_first=True, bidirectional=config.intent_rnn_bidirectional)
             layer.name = "intent_rnn%d" % idx
             self.intent_layers.append(layer)
@@ -217,7 +220,7 @@ class JointModel(nn.Module):
 
         self.lugosch_classifier = torch.nn.ModuleList(self.intent_layers)
         
-        
+       
 
     def forward(self, audio_feats=None, audio_lengths=None, input_text=None, text_lengths=None, text_only=False):
         if text_only:
@@ -230,16 +233,16 @@ class JointModel(nn.Module):
             #hiddens, lengths = self.speech_encoder(audio_feats, audio_lengths)
             audio_hiddens = self.lugosch_model.compute_features(audio_feats) #audio hiddens is 3D
             lengths = audio_lengths
-            # print(f"hidden_size: {hiddens.size()}, lengths: {lengths}") # hidden_size = {32, 24, 256}
+            print(f"audio_hiddens size: {audio_hiddens.size()}") ## alexa hidden_size = {32, 24, 256}
             
-            hiddens = self.aux_embedding(audio_hiddens) #3D
-            audio_embedding = self.maxpool(hiddens, lengths) #audio embedding is 2D
+            aux_hiddens = self.aux_embedding(audio_hiddens) #3D align with bert hidden size
+            audio_embedding = self.maxpool(aux_hiddens, lengths) #audio embedding is 2D
             # print(f"audio_embedding: {audio_embedding.size()}")
 
             #audio_logits = self.classifier(audio_embedding) 
             audio_logits = self.lugosch_classifier(audio_hiddens) 
             
-            # print(f"audio logits: {audio_logits.size()}")
+            print(f"audio logits: {audio_logits.size()}")
             outputs['audio_embed'], outputs['audio_logits'] = audio_embedding, audio_logits
 
         if input_text is not None:
@@ -248,9 +251,15 @@ class JointModel(nn.Module):
             attn_mask = torch.arange(max_seq_len, device=text_lengths.device)[None,:] < text_lengths[:,None]
             attn_mask = attn_mask.long() # Convert to 0-1
             _, text_embedding, bert_hiddens = self.bert(input_ids=input_text, attention_mask=attn_mask,output_hidden_states=True)
+            print(f"bert_hiddens size: {bert_hiddens.size()}")
+            
+            bert_hiddens = self.aux_reverse(bert_hiddens)
+            print(f"bert_hiddens size (after aux_reverse): {bert_hiddens.size()}")
             
             #text_logits = self.classifier(text_embedding)
             text_logits = self.lugosch_classifier(bert_hiddens) #3D
+            
+            print(f"text logits: {text_logits.size()}")
             outputs['text_embed'], outputs['text_logits'] = text_embedding, text_logits
 
         return outputs
@@ -263,8 +272,13 @@ class JointModel(nn.Module):
 
         attn_mask = torch.arange(max_seq_len, device=text_lengths.device)[None,:] < text_lengths[:,None]
         attn_mask = attn_mask.long() # Convert to 0-1
-        _, text_embedding = self.bert(input_ids=input_text, attention_mask=attn_mask)
-        text_logits = self.classifier(text_embedding)
+        _, text_embedding, bert_hiddens = self.bert(input_ids=input_text, attention_mask=attn_mask, output_hidden_states=True)
+        
+        bert_hiddens = self.aux_reverse(bert_hiddens)
+        
+        #text_logits = self.classifier(text_embedding)
+        text_logits = self.lugosch_classifier(bert_hiddens)
+        
         # print(f"text_embedding: {text_embedding.size()}, text_logits: {text_logits.size()}")
         outputs['text_embed'], outputs['text_logits'] = text_embedding, text_logits
         return outputs 
