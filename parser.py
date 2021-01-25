@@ -231,6 +231,7 @@ def parse():
                         default="/misc/vlgscratch5/PichenyGroup/s2i-common/alexa-slu/config")
 
     parser.add_argument("--unfreezing-type",
+                        type=int,
                         default=2,
                         help="0: No Unfreezing (freeze all), 1: Unfreeze Word, 2: Unfreeze All")
 
