@@ -155,7 +155,7 @@ def parse():
                         type=str,
                         help="Checkpoint path to be used for testing.")
 
-    ### Lugosch's Parser ###
+    ### Lugosch's Pretrained Model Parser ###
     parser.add_argument("--use-sincnet",
                         default=True)
 
@@ -233,6 +233,24 @@ def parse():
     parser.add_argument("--unfreezing-type",
                         default=2,
                         help="0: No Unfreezing (freeze all), 1: Unfreeze Word, 2: Unfreeze All")
+
+    ### Lugosch's IntentModule Parser ###
+    parser.add_argument("--intent_rnn_num_hidden",
+                        default=128,
+                        type=int)
+    parser.add_argument("--intent_downsample_len",
+                        default=1,
+                        type=int)
+    parser.add_argument("--intent_downsample_type",
+                        default=None,
+                        type=str)
+    parser.add_argument("--intent_rnn_drop",
+                        default=0.5,
+                        type=float)
+    parser.add_argument("--intent_rnn_bidirectional",
+                        action="store_false") #True
+    
+
 
     args = parser.parse_args()
     return args
