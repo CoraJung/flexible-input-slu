@@ -236,19 +236,19 @@ def parse():
                         help="0: No Unfreezing (freeze all), 1: Unfreeze Word, 2: Unfreeze All")
 
     ### Lugosch's IntentModule Parser ###
-    parser.add_argument("--intent_rnn_num_hidden",
+    parser.add_argument("--intent-rnn-num-hidden",
                         default=128,
                         type=int)
-    parser.add_argument("--intent_downsample_len",
+    parser.add_argument("--intent-downsample-len",
                         default=1,
                         type=int)
-    parser.add_argument("--intent_downsample_type",
-                        default=None,
+    parser.add_argument("--intent-downsample-type",
+                        default="none",
                         type=str)
-    parser.add_argument("--intent_rnn_drop",
+    parser.add_argument("--intent-rnn-drop",
                         default=0.5,
                         type=float)
-    parser.add_argument("--intent_rnn_bidirectional",
+    parser.add_argument("--intent-rnn-bidirectional",
                         action="store_false") #True
     
 
