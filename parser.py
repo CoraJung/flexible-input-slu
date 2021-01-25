@@ -237,21 +237,19 @@ def parse():
 
     ### Lugosch's IntentModule Parser ###
     parser.add_argument("--intent-rnn-num-hidden",
-                        default=128,
-                        type=int)
+                        default=[128],
+                        nargs="+")
     parser.add_argument("--intent-downsample-len",
-                        default=1,
-                        type=int)
+                        default=[1],
+                        nargs="+")
     parser.add_argument("--intent-downsample-type",
-                        default="none",
-                        type=str)
+                        default=["none"],
+                        nargs="+")
     parser.add_argument("--intent-rnn-drop",
-                        default=0.5,
-                        type=float)
+                        default=[0.5],
+                        nargs="+")
     parser.add_argument("--intent-rnn-bidirectional",
                         action="store_false") #True
     
-
-
     args = parser.parse_args()
     return args
