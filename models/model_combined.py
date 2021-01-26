@@ -233,7 +233,7 @@ class JointModel(nn.Module):
             #hiddens, lengths = self.speech_encoder(audio_feats, audio_lengths)
             audio_hiddens = self.lugosch_model.compute_features(audio_feats) #audio hiddens is 3D
             lengths = audio_lengths
-            print(f"audio_hiddens size: {audio_hiddens.size()}") ## alexa hidden_size = {32, 24, 256}
+            # print(f"audio_hiddens size: {audio_hiddens.size()}") ## alexa hidden_size = {32, 24, 256}
             
             aux_hiddens = self.aux_embedding(audio_hiddens) #3D align with bert hidden size
             audio_embedding = self.maxpool(aux_hiddens, lengths) #audio embedding is 2D
@@ -242,7 +242,7 @@ class JointModel(nn.Module):
             #audio_logits = self.classifier(audio_embedding) 
             audio_logits = self.lugosch_classifier(audio_hiddens) 
             
-            print(f"audio logits: {audio_logits.size()}")
+            # print(f"audio logits: {audio_logits.size()}")
             outputs['audio_embed'], outputs['audio_logits'] = audio_embedding, audio_logits
 
         if input_text is not None:
@@ -251,15 +251,15 @@ class JointModel(nn.Module):
             attn_mask = torch.arange(max_seq_len, device=text_lengths.device)[None,:] < text_lengths[:,None]
             attn_mask = attn_mask.long() # Convert to 0-1
             _, text_embedding, bert_hiddens = self.bert(input_ids=input_text, attention_mask=attn_mask,output_hidden_states=True)
-            print(f"bert_hiddens size: {bert_hiddens.size()}")
+            # print(f"bert_hiddens size: {bert_hiddens.size()}")
             
             bert_hiddens = self.aux_reverse(bert_hiddens)
-            print(f"bert_hiddens size (after aux_reverse): {bert_hiddens.size()}")
+            # print(f"bert_hiddens size (after aux_reverse): {bert_hiddens.size()}")
             
             #text_logits = self.classifier(text_embedding)
             text_logits = self.lugosch_classifier(bert_hiddens) #3D
             
-            print(f"text logits: {text_logits.size()}")
+            # print(f"text logits: {text_logits.size()}")
             outputs['text_embed'], outputs['text_logits'] = text_embedding, text_logits
 
         return outputs
@@ -314,10 +314,10 @@ class JointModel(nn.Module):
         if self.config.unfreezing_type == 1:
             trainable_index = 0 # which trainable layer
             global_index = 1 # which layer overall
-            print("Len of self.lugosch_model.word_layers:", len(self.lugosch_model.word_layers))
+            # print("Len of self.lugosch_model.word_layers:", len(self.lugosch_model.word_layers))
             while global_index <= len(self.lugosch_model.word_layers):
                 layer = self.lugosch_model.word_layers[-global_index]
-                print("lugosch_model.word_layers[-global_index]:", layer)
+                # print("lugosch_model.word_layers[-global_index]:", layer)
                 unfreeze_layer(layer)
                 if has_params(layer): trainable_index += 1
                 global_index += 1
