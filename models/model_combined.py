@@ -253,7 +253,7 @@ class JointModel(nn.Module):
             max_seq_len = input_text.shape[1]
             attn_mask = torch.arange(max_seq_len, device=text_lengths.device)[None,:] < text_lengths[:,None]
             attn_mask = attn_mask.long() # Convert to 0-1
-            _, text_embedding, bert_hiddens = self.bert(input_ids=input_text, attention_mask=attn_mask,output_hidden_states=True)
+            bert_hiddens, text_embedding = self.bert(input_ids=input_text, attention_mask=attn_mask)
             bert_hiddens = list(bert_hiddens)
             bert_hiddens = torch.stack(bert_hiddens, dim=0)
             print(f"bert_hiddens size: {bert_hiddens.size()}")
@@ -279,7 +279,7 @@ class JointModel(nn.Module):
 
         attn_mask = torch.arange(max_seq_len, device=text_lengths.device)[None,:] < text_lengths[:,None]
         attn_mask = attn_mask.long() # Convert to 0-1
-        _, text_embedding, bert_hiddens = self.bert(input_ids=input_text, attention_mask=attn_mask, output_hidden_states=True)
+        bert_hiddens, text_embedding = self.bert(input_ids=input_text, attention_mask=attn_mask)
         bert_hiddens = list(bert_hiddens)
         bert_hiddens = torch.stack(bert_hiddens, dim=0)
         bert_hiddens = self.aux_reverse(bert_hiddens)
