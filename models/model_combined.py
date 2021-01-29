@@ -238,9 +238,8 @@ class JointModel(nn.Module):
                 
             # classify intents
             audio_logits = self.classifier(audio_embeddings)
-  
-            #process the intent 
             print(f"audio logits: {audio_logits.size()}")
+
             outputs['audio_embed'], outputs['audio_logits'] = audio_embedding, audio_logits
 
         if input_text is not None:
@@ -248,6 +247,7 @@ class JointModel(nn.Module):
             max_seq_len = input_text.shape[1]
             attn_mask = torch.arange(max_seq_len, device=text_lengths.device)[None,:] < text_lengths[:,None]
             attn_mask = attn_mask.long() # Convert to 0-1
+
             _, text_embedding = self.bert(input_ids=input_text, attention_mask=attn_mask)
             text_logits = self.classifier(text_embedding)
             outputs['text_embed'], outputs['text_logits'] = text_embedding, text_logits
@@ -261,8 +261,10 @@ class JointModel(nn.Module):
 
         attn_mask = torch.arange(max_seq_len, device=text_lengths.device)[None,:] < text_lengths[:,None]
         attn_mask = attn_mask.long() # Convert to 0-1
+
         _, text_embedding = self.bert(input_ids=input_text, attention_mask=attn_mask)
         text_logits = self.classifier(text_embedding)
+
         # print(f"text_embedding: {text_embedding.size()}, text_logits: {text_logits.size()}")
         outputs['text_embed'], outputs['text_logits'] = text_embedding, text_logits
         return outputs
@@ -298,10 +300,10 @@ class JointModel(nn.Module):
         if self.config.unfreezing_type == 1:
             trainable_index = 0 # which trainable layer
             global_index = 1 # which layer overall
-            print("Len of self.lugosch_model.word_layers:", len(self.lugosch_model.word_layers))
+            # print("Len of self.lugosch_model.word_layers:", len(self.lugosch_model.word_layers))
             while global_index <= len(self.lugosch_model.word_layers):
                 layer = self.lugosch_model.word_layers[-global_index]
-                print("lugosch_model.word_layers[-global_index]:", layer)
+                # print("lugosch_model.word_layers[-global_index]:", layer)
                 unfreeze_layer(layer)
                 if has_params(layer): trainable_index += 1
                 global_index += 1
