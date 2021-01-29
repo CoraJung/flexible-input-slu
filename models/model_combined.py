@@ -234,7 +234,7 @@ class JointModel(nn.Module):
             
             # create intent embeddings (named it audio embeddings)
             audio_embeddings = self.aux_embedding(audio_hiddens) #2D align with bert hidden size
-            print(f"audio_embedding: {audio_embedding.size()}"
+            print(f"audio_embedding: {audio_embedding.size()}")
                 
             # classify intents
             audio_logits = self.classifier(audio_embeddings)
