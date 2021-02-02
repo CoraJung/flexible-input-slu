@@ -22,7 +22,6 @@ import torch.nn.functional as F
 """Runner class which implements training with triplet loss"""
 class ExperimentRunnerTriplet(ExperimentRunnerBase):
     def __init__(self, args):
-        super().__init__(args)
 
         # Get the dataset directory
         if args.data_path:
@@ -70,11 +69,15 @@ class ExperimentRunnerTriplet(ExperimentRunnerBase):
             {'params': self.model.speech_encoder.parameters()},
             {'params': self.model.classifier.parameters()}
         ], lr=args.learning_rate)
+        print(f"check if optimizer is initialized: {self.optimizer}")
 
+        
         # Parameters for the losses
         self.weight_text = args.weight_text
         self.weight_embedding = args.weight_embedding
         self.margin = args.margin
+
+        super().__init__(args)
 
     def compute_loss(self, batch):
         batch['feats'] = batch['feats'].to(self.device)
