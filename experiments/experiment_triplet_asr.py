@@ -70,7 +70,7 @@ class ExperimentRunnerTriplet(ExperimentRunnerBase):
         # Define the optimizers
         self.optimizer = torch.optim.Adam([
             {'params': self.model.bert.parameters(), 'lr':args.learning_rate_bert},
-            {'params': self.model.bert_asr.parameters(), 'lr':args.learning_rate_bert_asr}
+            {'params': self.model.bert_asr.parameters(), 'lr':args.learning_rate_bert_asr},
             {'params': self.model.lugosch_model.parameters()}, # replace speech_encoder with lugosch_model
             {'params': self.model.classifier.parameters()}
         ], lr=args.learning_rate)
