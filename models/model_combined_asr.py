@@ -153,7 +153,7 @@ class JointModel(nn.Module):
             outputs['text_embed'], outputs['text_logits'] = text_embedding, text_logits
             
         if input_asr is not None:
-            print('Running ASR branch...')
+            # print('Running ASR branch...')
             batch_size = input_asr.shape[0]
             max_seq_len = input_asr.shape[1]
             attn_mask = torch.arange(max_seq_len, device=asr_lengths.device)[None,:] < asr_lengths[:,None]
@@ -218,7 +218,7 @@ class JointModel(nn.Module):
             Unfreeze the next trainable layer
         """
         # no unfreezing
-        print("self.config.unfreezing_type: ", self.config.unfreezing_type)
+        # print("self.config.unfreezing_type: ", self.config.unfreezing_type)
         
         if self.config.unfreezing_type == 0:
             return
@@ -226,7 +226,7 @@ class JointModel(nn.Module):
         if self.config.unfreezing_type == 1:
             trainable_index = 0 # which trainable layer
             global_index = 1 # which layer overall
-            print("Len of self.lugosch_model.word_layers:", len(self.lugosch_model.word_layers))
+            # print("Len of self.lugosch_model.word_layers:", len(self.lugosch_model.word_layers))
             while global_index <= len(self.lugosch_model.word_layers):
                 layer = self.lugosch_model.word_layers[-global_index]
                 print("lugosch_model.word_layers[-global_index]:", layer)

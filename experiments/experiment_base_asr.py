@@ -87,7 +87,7 @@ class ExperimentRunnerBase:
                 # Logging and validation check
                 if step % self.print_every == 0:
                     print('Epoch {}, batch {}, step {}, '
-                          'loss = {:.4f}, acc_audio = {:.4f}, acc_asr = {:.4f}'
+                          'loss = {:.4f}, acc_audio = {:.4f}, acc_asr = {:.4f}, '
                           'running averages: loss = {:.4f}, acc_audio = {:.4f}, acc_asr = {:.4f}'.format(epoch,
                                                                                  batch_idx,
                                                                                  step,
