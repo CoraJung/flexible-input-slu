@@ -17,9 +17,8 @@ import torch
 import transformers
 from models.layers import SimpleEncoder, SimpleMaxPoolDecoder, SubsampledBiLSTMEncoder, SimpleMaxPoolClassifier, SimpleSeqDecoder, get_bert, MaskedMaxPool, ConvolutionalSubsampledBiLSTMEncoder
 import os
-import numpy as np
 
-""" Combined model (Alexa & Lugosch) - Approach 1 """
+""" Combined model (Alexa & Lugosch) """
 import lugosch.models
 ### Note we need to read config or hard-code depending on what args we are using
 
@@ -92,59 +91,7 @@ class BertNLU(nn.Module):
         _, pooled_output = self.bert(input_ids=input_text, attention_mask=mask)
         logits = self.classifier(pooled_output)
         return logits
-    
-class FinalPool(torch.nn.Module):
-    def __init__(self):
-        super(FinalPool, self).__init__()
 
-    def forward(self, input):
-        """
-        (Lugosch's models.py)
-        input : Tensor of shape (batch size, T, Cin)
-
-        Outputs a Tensor of shape (batch size, Cin).
-        """
-
-        return input.max(dim=1)[0]
-
-class Downsample(torch.nn.Module):
-    
-    """
-    (Lugosch's models.py)
-    Downsamples the input in the time/sequence domain
-    """
-    def __init__(self, method="none", factor=1, axis=1):
-        super(Downsample,self).__init__()
-        self.factor = factor
-        self.method = method
-        self.axis = axis
-        methods = ["none", "avg", "max"]
-        if self.method not in methods:
-            print("Error: downsampling method must be one of the following: \"none\", \"avg\", \"max\"")
-            sys.exit()
-
-    def forward(self, x):
-        if self.method == "none":
-            return x.transpose(self.axis, 0)[::self.factor].transpose(self.axis, 0)
-        if self.method == "avg":
-            return torch.nn.functional.avg_pool1d(x.transpose(self.axis, 2), kernel_size=self.factor, ceil_mode=True).transpose(self.axis, 2)
-        if self.method == "max":
-            return torch.nn.functional.max_pool1d(x.transpose(self.axis, 2), kernel_size=self.factor, ceil_mode=True).transpose(self.axis, 2)
-
-class RNNSelect(torch.nn.Module):
-    def __init__(self):
-        super(RNNSelect, self).__init__()
-
-    def forward(self, input):
-        """
-        (Lugosch's models.py)
-        input : tuple of stuff
-
-        Outputs a Tensor of shape 
-        """
-        return input[0] 
-    
-    
 class JointModel(nn.Module):
     """JointModel which combines both modalities"""
     """Replace Alexa's audio embedding with Lugosch's word embeddings"""
@@ -153,16 +100,9 @@ class JointModel(nn.Module):
     def __init__(self,config, input_dim, num_layers, num_classes, encoder_dim=None, bert_pretrained=True, bert_pretrained_model_name='bert-base-cased'):
         super().__init__()
         self.bert = get_bert(bert_pretrained, bert_pretrained_model_name)
+        self.bert_asr = get_bert(bert_pretrained, bert_pretrained_model_name)
         
-        ### Comment out Alexa's encoder
-#         self.encoder_dim = encoder_dim
-#         if encoder_dim is None:
-#             self.speech_encoder = SubsampledBiLSTMEncoder(input_dim=input_dim, encoder_dim=self.bert.config.hidden_size//2, num_layers=num_layers)
-#         else:
-#             self.speech_encoder = SubsampledBiLSTMEncoder(input_dim=input_dim, encoder_dim=encoder_dim, num_layers=num_layers)
-
         self.aux_embedding = nn.Linear(config.enc_dim, self.bert.config.hidden_size) #bert_hidden_size = 768 enc_dim = 128
-        self.aux_reverse = nn.Linear(self.bert.config.hidden_size, config.enc_dim) #match bert hidden size with Lugosch's
         self.lugosch_model = lugosch.models.PretrainedModel(config)
 
         pretrained_model_path = os.path.join(config.libri_folder, "libri_pretraining", "model_state.pth")
@@ -175,77 +115,32 @@ class JointModel(nn.Module):
         self.unfreezing_index = 1
         self.maxpool = MaskedMaxPool()
         self.classifier = nn.Linear(self.bert.config.hidden_size, num_classes)
-        
-        # Based on Lugosch's Intent Module (class Model in models.py)
-        self.intent_layers = []
-        self.num_values_total = num_classes #default for fluentai
-        
-        self.num_rnn_layers = len(config.intent_rnn_num_hidden)
-        self.out_dim = config.word_rnn_num_hidden[-1]
-        if config.word_rnn_bidirectional:
-            self.out_dim *= 2 
-        for idx in range(self.num_rnn_layers):
-            # recurrent
-            print("config.intent_rnn_bidirectional :",config.intent_rnn_bidirectional)
-            
-            layer = torch.nn.GRU(input_size=self.out_dim, hidden_size=config.intent_rnn_num_hidden[idx], batch_first=True, bidirectional=config.intent_rnn_bidirectional)
-            layer.name = "intent_rnn%d" % idx
-            self.intent_layers.append(layer)
 
-            self.out_dim = config.intent_rnn_num_hidden[idx]
-            if config.intent_rnn_bidirectional:
-                self.out_dim *= 2
-
-            # grab hidden states of RNN for each timestep
-            layer = RNNSelect()
-            layer.name = "intent_rnn_select%d" % idx
-            self.intent_layers.append(layer)
-
-            # dropout
-            layer = torch.nn.Dropout(p=config.intent_rnn_drop[idx])
-            layer.name = "intent_dropout%d" % idx
-            self.intent_layers.append(layer)
-
-            # downsample
-            layer = Downsample(method=config.intent_downsample_type[idx], factor=config.intent_downsample_len[idx], axis=1)
-            layer.name = "intent_downsample%d" % idx
-            self.intent_layers.append(layer)
-
-        layer = torch.nn.Linear(self.out_dim, self.num_values_total)
-        layer.name = "final_classifier"
-        self.intent_layers.append(layer)
-
-        layer = FinalPool() #maxpool 3D - 2D
-        layer.name = "final_pool"
-        self.intent_layers.append(layer)
-
-        self.lugosch_classifier = torch.nn.ModuleList(self.intent_layers)
-        
-       
-
-    def forward(self, audio_feats=None, audio_lengths=None, input_text=None, text_lengths=None, text_only=False):
+    def forward(self, audio_feats=None, audio_lengths=None, input_text=None, input_asr=None, text_lengths=None, asr_lengths=None, text_only=False, asr_only=False):
         if text_only:
             return self.forward_text(input_text, text_lengths)
+           
+        if asr_only:
+            print('Running ASR only...')
+            return self.forward_asr(input_asr, asr_lengths)
+        
         outputs = {}
         
         if audio_feats is not None:
             
             # print(f"audio feats from JointModel : {audio_feats.size()}")
-            #hiddens, lengths = self.speech_encoder(audio_feats, audio_lengths)
-            audio_hiddens = self.lugosch_model.compute_features(audio_feats) #audio hiddens is 3D
+    
+            hiddens = self.lugosch_model.compute_features(audio_feats) #check input dimension use Lugosch's padded input
             lengths = audio_lengths
-            print(f"audio_hiddens size: {audio_hiddens.size()}") ## alexa hidden_size = {32, 24, 256}
-            
-            aux_hiddens = self.aux_embedding(audio_hiddens) #3D align with bert hidden size
-            audio_embedding = self.maxpool(aux_hiddens, lengths) #audio embedding is 2D
+            # print(f"hidden_size: {hiddens.size()}, lengths: {lengths}") # hidden_size = {32, 24, 256}
+
+            hiddens = self.aux_embedding(hiddens)
+
+            audio_embedding = self.maxpool(hiddens, lengths)
             # print(f"audio_embedding: {audio_embedding.size()}")
 
-            #audio_logits = self.classifier(audio_embedding)
-            for layer in self.lugosch_classifier:
-                audio_hiddens = layer(audio_hiddens)
-            audio_logits = audio_hiddens # 3D
-            
-            print(f"audio logits: {audio_logits.size()}")
+            audio_logits = self.classifier(audio_embedding) 
+            # print(f"audio logits: {audio_logits.size()}")
             outputs['audio_embed'], outputs['audio_logits'] = audio_embedding, audio_logits
 
         if input_text is not None:
@@ -253,21 +148,20 @@ class JointModel(nn.Module):
             max_seq_len = input_text.shape[1]
             attn_mask = torch.arange(max_seq_len, device=text_lengths.device)[None,:] < text_lengths[:,None]
             attn_mask = attn_mask.long() # Convert to 0-1
-            _, text_embedding, bert_hiddens = self.bert(input_ids=input_text, attention_mask=attn_mask,output_hidden_states=True)
-            bert_hiddens = np.asarray(bert_hiddens)
-            bert_hiddens = torch.as_tensor(bert_hiddens)
-            print(f"bert_hiddens size: {bert_hiddens.size()}")
-            
-            bert_hiddens = self.aux_reverse(bert_hiddens)
-            print(f"bert_hiddens size (after aux_reverse): {bert_hiddens.size()}")
-            
-            #text_logits = self.classifier(text_embedding)
-            for layer in self.lugosch_classifier:
-                bert_hiddens = layer(bert_hiddens)
-            text_logits = bert_hiddens # 3D
-            
-            print(f"text logits: {text_logits.size()}")
+            _, text_embedding = self.bert(input_ids=input_text, attention_mask=attn_mask)
+            text_logits = self.classifier(text_embedding)
             outputs['text_embed'], outputs['text_logits'] = text_embedding, text_logits
+            
+        if input_asr is not None:
+            print('Running ASR branch...')
+            batch_size = input_asr.shape[0]
+            max_seq_len = input_asr.shape[1]
+            attn_mask = torch.arange(max_seq_len, device=asr_lengths.device)[None,:] < asr_lengths[:,None]
+            attn_mask = attn_mask.long() # Convert to 0-1
+            _, asr_embedding = self.bert_asr(input_ids=input_asr, attention_mask=attn_mask)
+            asr_logits = self.classifier(asr_embedding)
+            outputs['asr_embed'], outputs['asr_logits'] = asr_embedding, asr_logits            
+        
 
         return outputs
 
@@ -279,20 +173,28 @@ class JointModel(nn.Module):
 
         attn_mask = torch.arange(max_seq_len, device=text_lengths.device)[None,:] < text_lengths[:,None]
         attn_mask = attn_mask.long() # Convert to 0-1
-        _, text_embedding, bert_hiddens = self.bert(input_ids=input_text, attention_mask=attn_mask, output_hidden_states=True)
-        bert_hiddens = np.asarray(bert_hiddens)
-        bert_hiddens = torch.as_tensor(bert_hiddens)
-        bert_hiddens = self.aux_reverse(bert_hiddens)
-        
-        #text_logits = self.classifier(text_embedding)
-        for layer in self.lugosch_classifier:
-                bert_hiddens = layer(bert_hiddens)
-        text_logits = bert_hiddens # 3D
-        
+        _, text_embedding = self.bert(input_ids=input_text, attention_mask=attn_mask)
+        text_logits = self.classifier(text_embedding)
         # print(f"text_embedding: {text_embedding.size()}, text_logits: {text_logits.size()}")
         outputs['text_embed'], outputs['text_logits'] = text_embedding, text_logits
         return outputs 
 
+    def forward_asr(self, input_asr, asr_lengths):
+        outputs = {}
+        batch_size = input_asr.shape[0]
+        max_seq_len = input_asr.shape[1]
+        # print(f"batch_size: {batch_size}, max_seq_len: {max_seq_len}")
+
+        attn_mask = torch.arange(max_seq_len, device=asr_lengths.device)[None,:] < asr_lengths[:,None]
+        attn_mask = attn_mask.long() # Convert to 0-1
+        _, asr_embedding = self.bert_asr(input_ids=input_asr, attention_mask=attn_mask)
+        asr_logits = self.classifier(asr_embedding)
+        # print(f"text_embedding: {text_embedding.size()}, text_logits: {text_logits.size()}")
+        outputs['asr_embed'], outputs['asr_logits'] = asr_embedding, asr_logits
+        return outputs 
+    
+    
+    
     # functions below are adopted from lugosch models.py
     def freeze_all_layers(self):
         for layer in self.lugosch_model.phoneme_layers:
