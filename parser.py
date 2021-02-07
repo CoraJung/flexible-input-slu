@@ -130,6 +130,11 @@ def parse():
                         type=int,
                         help="Hidden dimension of encoder LSTM")
 
+    parser.add_argument("--weight-audio",
+                        default=1,
+                        type=float,
+                        help="Weight of the audio classification loss for joint models")
+
     parser.add_argument("--weight-text",
                         default=1,
                         type=float,
@@ -251,5 +256,26 @@ def parse():
     parser.add_argument("--intent-rnn-bidirectional",
                         action="store_false") #True
     
+    ### ASR Parser ###
+    parser.add_argument("-lr-bert", "--learning-rate-bert-asr",
+                        type=float,
+                        default=2e-5,
+                        help="Learning rate of the ASR BERT model")
+
+    parser.add_argument("--weight-asr",
+                        default=1,
+                        type=float,
+                        help="Weight of the ASR text classification loss for joint models")
+
+    parser.add_argument("-m", "--asr-margin",
+                        type=float,
+                        default=1.0,
+                        help="Margin for ASR embedding losses")
+
+    parser.add_argument("--weight-embedding-asr",
+                        default=1,
+                        type=float,
+                        help="Weight of the ASR embedding loss for joint models")
+
     args = parser.parse_args()
     return args
