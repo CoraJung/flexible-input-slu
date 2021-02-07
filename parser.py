@@ -257,7 +257,7 @@ def parse():
                         action="store_false") #True
     
     ### ASR Parser ###
-    parser.add_argument("-lr-bert--asr", "--learning-rate-bert-asr",
+    parser.add_argument("-lr-bert-asr", "--learning-rate-bert-asr",
                         type=float,
                         default=2e-5,
                         help="Learning rate of the ASR BERT model")
@@ -267,7 +267,7 @@ def parse():
                         type=float,
                         help="Weight of the ASR text classification loss for joint models")
 
-    parser.add_argument("-m", "--asr-margin",
+    parser.add_argument("-am", "--asr-margin",
                         type=float,
                         default=1.0,
                         help="Margin for ASR embedding losses")
