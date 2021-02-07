@@ -83,6 +83,7 @@ class ExperimentRunnerTriplet(ExperimentRunnerBase):
         self.weight_embedding_asr = args.weight_embedding_asr
         self.weight_asr = args.weight_asr
         self.margin = args.margin
+        self.asr_margin = args.asr_margin
 
         super().__init__(args)
 
