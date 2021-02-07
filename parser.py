@@ -257,7 +257,7 @@ def parse():
                         action="store_false") #True
     
     ### ASR Parser ###
-    parser.add_argument("-lr-bert", "--learning-rate-bert-asr",
+    parser.add_argument("-lr-bert--asr", "--learning-rate-bert-asr",
                         type=float,
                         default=2e-5,
                         help="Learning rate of the ASR BERT model")
