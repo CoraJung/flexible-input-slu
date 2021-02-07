@@ -96,7 +96,7 @@ class ExperimentRunnerBase:
                                                                                  asr_train_acc,
                                                                                  avg_train_loss.get(),
                                                                                  avg_train_acc.get(),
-                                                                                 asr_avg_train_acc.get())
+                                                                                 asr_avg_train_acc.get()))
 
                 if step % self.val_every == 0:
                     val_loss, val_acc, asr_val_acc = self.val()
