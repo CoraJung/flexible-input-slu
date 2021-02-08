@@ -4,7 +4,7 @@ import torch.nn as nn
 from torch.nn.utils import rnn
 import numpy as np
 import torch.nn.functional as F
-import data.get_dataloaders as get_dataloaders
+from data import get_dataloaders
 import os
 
 
@@ -19,12 +19,12 @@ def get_bert(pretrained=True, pretrained_model_name='bert-base-cased'):
 
 class BertNLU(nn.Module):
     """BERT NLU module"""
-    def __init__(self, pretrained=True, args):
+    def __init__(self, args, pretrained=True):
         super().__init__()
         self.bert = get_bert(pretrained)
         if args.dataset == "snips":
             num_classes = 6
-        elif args.dataset == "fsc"
+        elif args.dataset == "fsc":
             num_classes = 31
         # else:
         #     num_classes = 91
@@ -61,7 +61,7 @@ class ExperimentRunner:
         # Define the data loaders
         self.train_loader, \
         self.val_loader, \
-        self.test_loader = get_dataloaders(data_root=data_dir,
+        self.test_loader = get_dataloaders(data_root=args.data_path,
                                            batch_size=args.batch_size,
                                            dataset=args.dataset,
                                            num_workers=args.num_workers)

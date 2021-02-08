@@ -15,7 +15,7 @@
 from parser import parse
 import torch
 import numpy as np
-import model.ExperimentRunner as runner
+from model import ExperimentRunner as runner
 
 
 if __name__ == '__main__':

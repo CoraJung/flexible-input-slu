@@ -28,14 +28,15 @@ class IntentEncoder(Dataset):
     Inspired by BaseFluentSpeechDataset(BaseDataset)
     '''
     def __init__(self, df, dataset='snips', intent_encoder=None):
-        
+        self.df = df
+	self.dataset = dataset
         pretrained_model_name = 'bert-base-cased'
-        if dataset == 'fsc':
-            df['intent'] = df[['action', 'object', 'location']].apply('-'.join, axis=1)
+        if self.dataset == 'fsc':
+            self.df['intent'] = self.df[['action', 'object', 'location']].apply('-'.join, axis=1)
 
         if intent_encoder is None:
             intent_encoder = preprocessing.LabelEncoder()
-            intent_encoder.fit(df['intent'])
+            intent_encoder.fit(self.df['intent'])
         self.intent_encoder = intent_encoder
         self.df['intent_label'] = intent_encoder.transform(self.df['intent'])
         self.labels_set = set(self.df['intent_label'])
