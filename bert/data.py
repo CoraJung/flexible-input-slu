@@ -3,7 +3,7 @@ import torch.nn as nn
 from torch.nn.utils import rnn
 import numpy as np
 import torch.nn.functional as F
-from transformers import BertModel, BertConfig
+from transformers import BertModel, BertConfig, BertTokenizer
 from sklearn import preprocessing
 import pandas as pd
 from torch.utils.data import Dataset, DataLoader
@@ -72,7 +72,7 @@ class BaseDataset(IntentEncoder):
         return len(self.df)
 
     def __getitem__(self, idx):
-        return self.encode_text(idx, self.bert_tokenizer)
+        return encode_text(idx, self.bert_tokenizer)
 
 # Step 4: Put everything into DataLoader
 def default_collate_classifier(inputs):
