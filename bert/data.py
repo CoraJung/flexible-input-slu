@@ -29,7 +29,7 @@ class IntentEncoder(Dataset):
     '''
     def __init__(self, df, dataset='snips', intent_encoder=None):
         self.df = df
-	self.dataset = dataset
+        self.dataset = dataset
         pretrained_model_name = 'bert-base-cased'
         if self.dataset == 'fsc':
             self.df['intent'] = self.df[['action', 'object', 'location']].apply('-'.join, axis=1)
