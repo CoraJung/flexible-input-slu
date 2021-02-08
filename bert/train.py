@@ -15,6 +15,7 @@
 from parser import parse
 import torch
 import numpy as np
+import model.ExperimentRunner as runner
 
 
 if __name__ == '__main__':
@@ -25,11 +26,8 @@ if __name__ == '__main__':
     np.random.seed(args.seed)
 
     """ Import specified class with the experimental setup."""
-    exp_args = args.experiment.split(".")
-    exp_path = ".".join(exp_args[:-1])
-    exp_name = exp_args[-1]
-    runner_class = getattr(__import__(exp_path, fromlist=[exp_name]), exp_name)
-    runner = runner_class(args)
+    
+    runner = runner(args)
 
     if not args.infer_only:
         runner.train()
