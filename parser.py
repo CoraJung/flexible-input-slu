@@ -276,6 +276,12 @@ def parse():
                         default=1,
                         type=float,
                         help="Weight of the ASR embedding loss for joint models")
+    
+    ### bert Parser ###
+    parser.add_argument("--finetune-bert",
+                        action='store_true',
+                        help="decides if bert model is finetuned or frozen. default is false")
+
 
     args = parser.parse_args()
     return args
