@@ -48,7 +48,7 @@ class BertNLU(nn.Module):
 class ExperimentRunner:
     def __init__(self, args):
         # Set the LR Scheduler and Loss Parameters
-        
+        self.args = args
         self.model = BertNLU(args)
 
         print(self.model)
