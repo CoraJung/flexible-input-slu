@@ -47,32 +47,29 @@ class IntentEncoder(Dataset):
 
         self.bert_tokenizer = BertTokenizer.from_pretrained(pretrained_model_name)
 
-# Step 3: Call BERT to encode text
-
-def encode_text(idx, bert_tokenizer):
-    
-    df_row = df.iloc[idx]
-
-    intent = df_row['intent_label']
-    encoding = bert_tokenizer.encode_plus(
-        df_row['transcription'],
-        add_special_tokens=True,
-        return_token_type_ids=False,
-        return_tensors='pt'
-        )
-
-    ret_dict = {'label':intent, 'encoded_text':encoding['input_ids'].flatten(),
-                'text_length':encoding['input_ids'].flatten().shape[0]}
-
-    return ret_dict
-
 
 class BaseDataset(IntentEncoder):
     def __len__(self):
         return len(self.df)
+    
+    def encode_text(self, idx):
+        df_row = self.df.iloc[idx]
+
+        intent = df_row['intent_label']
+        encoding = self.bert_tokenizer.encode_plus(
+            df_row['transcription'],
+            add_special_tokens=True,
+            return_token_type_ids=False,
+            return_tensors='pt'
+            )
+
+        ret_dict = {'label':intent, 'encoded_text':encoding['input_ids'].flatten(),
+                    'text_length':encoding['input_ids'].flatten().shape[0]}
+
+        return ret_dict
 
     def __getitem__(self, idx):
-        return encode_text(idx, self.bert_tokenizer)
+        return self.encode_text(idx)
 
 # Step 4: Put everything into DataLoader
 def default_collate_classifier(inputs):
