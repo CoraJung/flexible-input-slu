@@ -105,14 +105,19 @@ class JointModel(nn.Module):
         if config.bert_dir:
             print(f"loading model3 (bert pretrained on GT and ASR) from {config.bert_dir}")
             chkpt_path = os.path.join(config.bert_dir, 'best_ckpt.pth')
-            self.bert.load_state_dict(torch.load(chkpt_path))
+            model_dict = self.bert.state_dict()
+            pretrained_dict = torch.load(chkpt_path)
+            
+            print('Original pretrained_dict: ')
+            print([k.split(".", 1)[1] for k, v in pretrained_dict.items()])
+            
+            pretrained_dict = {k.split(".", 1)[1]: v for k, v in pretrained_dict.items() if k.split(".", 1)[1] in model_dict}
+            print('Updated pretrained_dict: ')
+            print({k.split(".", 1)[1] for k, v in pretrained_dict.items()})
+            
+            self.bert.load_state_dict(pretrained_dict)
         
         ### Comment out Alexa's encoder
-#         self.encoder_dim = encoder_dim
-#         if encoder_dim is None:
-#             self.speech_encoder = SubsampledBiLSTMEncoder(input_dim=input_dim, encoder_dim=self.bert.config.hidden_size//2, num_layers=num_layers)
-#         else:
-#             self.speech_encoder = SubsampledBiLSTMEncoder(input_dim=input_dim, encoder_dim=encoder_dim, num_layers=num_layers)
 
         self.aux_embedding = nn.Linear(config.enc_dim, self.bert.config.hidden_size) #bert_hidden_size = 768 enc_dim = 128
         self.lugosch_model = lugosch.models.PretrainedModel(config)
@@ -141,8 +146,6 @@ class JointModel(nn.Module):
             lengths = audio_lengths
             # print(f"hidden_size: {hiddens.size()}, lengths: {lengths}") # hidden_size = {32, 24, 256}
 
-#             if self.encoder_dim is not None:
-#                 hiddens = self.aux_embedding(hiddens)
             hiddens = self.aux_embedding(hiddens)
 
             audio_embedding = self.maxpool(hiddens, lengths)
