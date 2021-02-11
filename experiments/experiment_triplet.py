@@ -68,12 +68,19 @@ class ExperimentRunnerTriplet(ExperimentRunnerBase):
                                                    pretrained_model_name=args.bert_model_name)
 
         # Define the optimizers
-        self.optimizer = torch.optim.Adam([
-            {'params': self.model.bert.parameters(), 'lr':args.learning_rate_bert},
-            {'params': self.model.lugosch_model.parameters()}, # replace speech_encoder with lugosch_model
-            {'params': self.model.classifier.parameters()}
-        ], lr=args.learning_rate)
-
+        if args.finetune_bert:
+            print('Finetuning BERT')
+            self.optimizer = torch.optim.Adam([
+                {'params': self.model.bert.parameters(), 'lr':args.learning_rate_bert}, 
+                {'params': self.model.lugosch_model.parameters()},
+                {'params': self.model.classifier.parameters()}
+            ], lr=args.learning_rate)
+        else: 
+            print('Freezing BERT')
+            self.optimizer = torch.optim.Adam([ 
+                {'params': self.model.lugosch_model.parameters()},
+                {'params': self.model.classifier.parameters()}
+            ], lr=args.learning_rate)
         
         # Parameters for the losses
         self.weight_text = args.weight_text
@@ -127,8 +134,16 @@ class ExperimentRunnerTriplet(ExperimentRunnerBase):
         correct = (predicted == batch['label'])
         accuracy = float(torch.sum(correct)) / predicted.shape[0]
 
+        # Accuracy of text branch
+        text_predicted = torch.argmax(output['text_logits'], dim=1)
+        text_correct = (text_predicted == batch['label'])
+        text_accuracy = float(torch.sum(text_correct)) / text_predicted.shape[0]
+
         return {'loss': loss,
                 'accuracy': accuracy,
                 'predicted': predicted,
                 'correct': correct,
-                'model_output': output}
+                'model_output': output,
+                'text_accuracy': text_accuracy,
+                'text_predicted': text_predicted,
+                'text_correct': text_correct}

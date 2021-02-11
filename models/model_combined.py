@@ -101,6 +101,12 @@ class JointModel(nn.Module):
         super().__init__()
         self.bert = get_bert(bert_pretrained, bert_pretrained_model_name)
         
+        #model 3 is bert trained on GT and ASR
+        if config.bert_dir:
+            print(f"loading model3 (bert pretrained on GT and ASR) from {config.bert_dir}")
+            chkpt_path = os.path.join(config.bert_dir, 'best_ckpt.pth')
+            self.bert.load_state_dict(torch.load(chkpt_path))
+        
         ### Comment out Alexa's encoder
 #         self.encoder_dim = encoder_dim
 #         if encoder_dim is None:
