@@ -282,6 +282,10 @@ def parse():
                         action='store_true',
                         help="decides if bert model is finetuned or frozen. default is false")
 
+    ### bert loader Parser ###
+    parser.add_argument("--bert-dir",
+                        default=None,
+                        help="load finetuned bert model")
 
     args = parser.parse_args()
     return args
