@@ -106,15 +106,8 @@ class JointModel(nn.Module):
             print(f"loading model3 (bert pretrained on GT and ASR) from {config.bert_dir}")
             chkpt_path = os.path.join(config.bert_dir, 'best_ckpt.pth')
             model_dict = self.bert.state_dict()
-            pretrained_dict = torch.load(chkpt_path)
-            
-            print('Original pretrained_dict: ')
-            print([k.split(".", 1)[1] for k, v in pretrained_dict.items()])
-            
-            pretrained_dict = {k.split(".", 1)[1]: v for k, v in pretrained_dict.items() if k.split(".", 1)[1] in model_dict}
-            print('Updated pretrained_dict: ')
-            print({k.split(".", 1)[1] for k, v in pretrained_dict.items()})
-            
+            pretrained_dict = torch.load(chkpt_path)           
+            pretrained_dict = {k.split(".", 1)[1]: v for k, v in pretrained_dict.items() if k.split(".", 1)[1] in model_dict}            
             self.bert.load_state_dict(pretrained_dict)
         
         ### Comment out Alexa's encoder
