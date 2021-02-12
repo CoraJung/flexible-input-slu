@@ -99,7 +99,7 @@ class ExperimentRunnerBase:
                         self.writer.add_scalar('Val/acc', val_acc, step)
 
                     # Update the save the best validation checkpoint if needed
-                    if text_val_acc > best_val_acc:
+                    if val_acc > best_val_acc:
                         best_val_acc = text_val_acc
                         best_chkpt_path = os.path.join(self.model_dir,
                                                        'best_ckpt.pth')
