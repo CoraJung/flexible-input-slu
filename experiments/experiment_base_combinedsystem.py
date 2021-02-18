@@ -169,6 +169,8 @@ class ExperimentRunnerBase:
             avg_test_acc.update(output['correct'].cpu().numpy())
             text_avg_test_acc.update(output['text_correct'].cpu().numpy())
             combined_avg_test_acc.update(output['combined_correct'].cpu().numpy())
+            
+            avg_test_loss.update([output['loss']])
 
         print('Final test acc (audio) = {:.4f}, final test acc (text) = {:.4f}, final test acc (combined system) = {:.4f}, test loss = {:.4f}'.format(avg_test_acc.get(), text_avg_test_acc.get(), combined_avg_test_acc.get(), avg_test_loss.get()))
         return avg_test_loss.get(), avg_test_acc.get(), text_avg_test_acc.get()
