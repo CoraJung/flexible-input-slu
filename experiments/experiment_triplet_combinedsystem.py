@@ -15,7 +15,7 @@
 import torch
 from models.model_combined import JointModel
 from dataloader.data import get_triplet_dataloaders
-from experiments.experiment_base import ExperimentRunnerBase
+from experiments.experiment_base_combinedsystem import ExperimentRunnerBase
 import torch.nn.functional as F
 
 

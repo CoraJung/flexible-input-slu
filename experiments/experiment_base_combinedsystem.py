@@ -54,7 +54,8 @@ class ExperimentRunnerBase:
         avg_train_loss = AverageMeter()
         avg_train_acc = AverageMeter()
         text_avg_train_acc = AverageMeter()
-      
+        combined_avg_train_acc = AverageMeter()
+        
         best_val_acc = -np.inf
     
         for epoch in range(self.num_epochs):
@@ -93,8 +94,8 @@ class ExperimentRunnerBase:
                                                                                  text_avg_train_acc.get()))
 
                 if step % self.val_every == 0:
-                    val_loss, val_acc, text_val_acc = self.val()
-                    print('Val acc (audio) = {:.4f}, Val acc (text) = {:.4f}, Val loss = {:.4f}'.format(val_acc, text_val_acc, val_loss))
+                    val_loss, val_acc, text_val_acc, combined_val_acc = self.val()
+                    print('Val acc (audio) = {:.4f}, Val acc (text) = {:.4f}, Val acc (combined) = {:.4f}, Val loss = {:.4f}'.format(val_acc, text_val_acc, combined_val_acc, val_loss))
                     if self.visualize:
                         self.writer.add_scalar('Val/loss', val_loss, step)
                         self.writer.add_scalar('Val/acc', val_acc, step)
@@ -142,17 +143,17 @@ class ExperimentRunnerBase:
         avg_val_loss = AverageMeter() #final loss
         avg_val_acc = AverageMeter()  #audio acc
         text_avg_val_acc = AverageMeter() #text acc
-       
+        combined_avg_val_acc = AverageMeter() #combined acc
         
         self.model.eval()
         for batch_idx, batch in enumerate(tqdm(self.val_loader)):
             metrics = self.compute_loss(batch)
             avg_val_acc.update(metrics['correct'].cpu().numpy())
             text_avg_val_acc.update(metrics['text_correct'].cpu().numpy())
-            
+            combined_avg_val_acc.update(metrics['combined_correct'].cpu().numpy())
             
             avg_val_loss.update([metrics['loss']])
-        return avg_val_loss.get(), avg_val_acc.get(), text_avg_val_acc.get()
+        return avg_val_loss.get(), avg_val_acc.get(), text_avg_val_acc.get(), combined_avg_val_acc.get()
 
     @torch.no_grad()
     def infer(self):
@@ -160,14 +161,14 @@ class ExperimentRunnerBase:
         avg_test_loss = AverageMeter()
         avg_test_acc = AverageMeter()
         text_avg_test_acc = AverageMeter()
-       
+        combined_avg_test_acc = AverageMeter()
 
         for batch_idx, batch in enumerate(tqdm(self.test_loader)):
             # Get the model output and update the meters
             output = self.compute_loss(batch)
             avg_test_acc.update(output['correct'].cpu().numpy())
             text_avg_test_acc.update(output['text_correct'].cpu().numpy())
-         
+            combined_avg_test_acc.update(output['combined_correct'].cpu().numpy())
 
-        print('Final test acc (audio) = {:.4f}, final test acc (text) = {:.4f}, test loss = {:.4f}'.format(avg_test_acc.get(), text_avg_test_acc.get(), avg_test_loss.get()))
+        print('Final test acc (audio) = {:.4f}, final test acc (text) = {:.4f}, final test acc (combined system) = {:.4f}, test loss = {:.4f}'.format(avg_test_acc.get(), text_avg_test_acc.get(), combined_avg_test_acc.get(), avg_test_loss.get()))
         return avg_test_loss.get(), avg_test_acc.get(), text_avg_test_acc.get()
