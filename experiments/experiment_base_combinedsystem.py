@@ -101,7 +101,7 @@ class ExperimentRunnerBase:
                         self.writer.add_scalar('Val/acc', val_acc, step)
 
                     # Update the save the best validation checkpoint if needed
-                    if args.model_save_criteria == 'audio_text':
+                    if self.args.model_save_criteria == 'audio_text':
                         cur_avg_acc = (val_acc + text_val_acc) / 2
                     else: #'combined'
                         cur_avg_acc = combined_val_acc
