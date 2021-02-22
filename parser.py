@@ -286,6 +286,12 @@ def parse():
     parser.add_argument("--bert-dir",
                         default=None,
                         help="load finetuned bert model")
+    
+    ### save criteria ###
+    parser.add_argument("--model-save-criteria",
+                        choices=['combined', 'audio_text'],
+                        default='audio_text',
+                        help="Criteria to save the best checkpoints")
 
     args = parser.parse_args()
     return args

@@ -101,11 +101,13 @@ class ExperimentRunnerBase:
                         self.writer.add_scalar('Val/acc', val_acc, step)
 
                     # Update the save the best validation checkpoint if needed
+                    if args.model_save_criteria == 'audio_text':
+                        cur_avg_acc = (val_acc + text_val_acc) / 2
+                    else: #'combined'
+                        cur_avg_acc = combined_val_acc
                     
-                    audio_text_avg_acc = (val_acc + text_val_acc) / 2
-                   
-                    if audio_text_avg_acc > best_val_acc:
-                        best_val_acc = audio_text_avg_acc
+                    if cur_avg_acc > best_val_acc:
+                        best_val_acc = cur_avg_acc
                         best_chkpt_path = os.path.join(self.model_dir,
                                                        'best_ckpt.pth')
                         torch.save(self.model.state_dict(), best_chkpt_path)
