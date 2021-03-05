@@ -402,7 +402,7 @@ def get_pairwise_dataloaders(data_root, batch_size, dataset='fsc', num_workers=0
         train_dataset = FluentSpeechPairwiseDataset(data_root, 'train', *args, **kwargs)
         val_dataset = FluentSpeechPairwiseDataset(data_root, 'valid', train_dataset.intent_encoder, *args, **kwargs)
         test_dataset = FluentSpeechPairwiseDataset(data_root, 'test', train_dataset.intent_encoder, *args, **kwargs)
-    elif dataset == 'snips':
+    elif dataset == 'snips' or dataset == 'slurp':
         train_dataset = SnipsSLUPairwiseDataset(data_root, 'train', *args, **kwargs)
         val_dataset = SnipsSLUPairwiseDataset(data_root, 'valid', *args, **kwargs)
         test_dataset = SnipsSLUPairwiseDataset(data_root, 'test', *args, **kwargs)
