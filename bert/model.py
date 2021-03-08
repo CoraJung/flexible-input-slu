@@ -27,8 +27,10 @@ class BertNLU(nn.Module):
             num_classes = 6
         elif args.dataset == "fsc":
             num_classes = 31
-        # else:
-        #     num_classes = 91
+
+        elif args.dataset == "slurp":
+            num_classes = 91
+            args.dataset = "snips"
 
         self.classifier = nn.Sequential(
             # nn.Dropout(0.3),
