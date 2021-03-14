@@ -45,7 +45,7 @@ class BaseDataset(Dataset):
         
         x = wav[0].numpy()
         fbank_feats = x
-        print('fbank_feats.size():', fbank_feats.size())
+        print('fbank_feats.shape:', fbank_feats.shape)
         # print(f"feature contents extracted from lugosch sox: {fbank_feats}")
         # x = wav[0]
         # if idx == 1:
