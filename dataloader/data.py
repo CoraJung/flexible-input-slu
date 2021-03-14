@@ -38,12 +38,14 @@ class BaseDataset(Dataset):
         ##################### Emmy 11/06 - use direct path
         # wav_path = os.path.join(self.base_path, self.df.loc[idx].path)
         wav_path = self.df.loc[idx].path
+        print('wav_path:', wav_path)
         effect = torchaudio.sox_effects.SoxEffectsChain()
         effect.set_input_file(wav_path)
         wav, fs = effect.sox_build_flow_effects()
         
         x = wav[0].numpy()
         fbank_feats = x
+        print('fbank_feats.size():', fbank_feats.size())
         # print(f"feature contents extracted from lugosch sox: {fbank_feats}")
         # x = wav[0]
         # if idx == 1:
