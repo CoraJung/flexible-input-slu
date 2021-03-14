@@ -109,7 +109,9 @@ class ExperimentRunnerTriplet(ExperimentRunnerBase):
                             batch['text_length'])
         print('calc cross entropy...')
         audio_ce = self.criterion(output['audio_logits'], batch['label'])
+        print('audio logits:', output['audio_logits'], ', label:', batch['label'])
         text_ce = self.criterion(output['text_logits'], batch['label'])
+        print('text logits:', output['text_logits'], ', label:', batch['label'])
 
         # Triplet loss - positive instance
         print('getting positive instances for triplet loss...')
