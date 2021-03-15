@@ -150,7 +150,9 @@ class ExperimentRunnerBase:
         combined_avg_val_acc = AverageMeter() #combined acc
         
         self.model.eval()
+        print('model put in evaluation mode')
         for batch_idx, batch in enumerate(tqdm(self.val_loader)):
+            print(batch_idx, batch)
             metrics = self.compute_loss(batch)
             print('EVAL batch: ', batch_idx, 'updating avg_val_acc for 3 inputs...')
             avg_val_acc.update(metrics['correct'].cpu().numpy())
