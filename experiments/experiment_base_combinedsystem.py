@@ -107,12 +107,12 @@ class ExperimentRunnerBase:
                         cur_avg_acc = combined_val_acc
                     
                     if cur_avg_acc > best_val_acc:
-                        print('Start saving best check point at step{}...'.format(step))
+                        #print('Start saving best check point at step{}...'.format(step))
                         best_val_acc = cur_avg_acc
                         best_chkpt_path = os.path.join(self.model_dir,
                                                        'best_ckpt.pth')
                         torch.save(self.model.state_dict(), best_chkpt_path)
-                        print('Done saving best check point!')
+                        #print('Done saving best check point!')
                     if self.args.scheduler == 'plateau':
                         self.scheduler.step(audio_text_avg_acc)
 
@@ -150,12 +150,9 @@ class ExperimentRunnerBase:
         combined_avg_val_acc = AverageMeter() #combined acc
         
         self.model.eval()
-        print('model put in evaluation mode')
-        print(self.val_loader)
         for batch_idx, batch in enumerate(tqdm(self.val_loader)):
-            print(batch_idx, batch)
+            
             metrics = self.compute_loss(batch)
-            print('EVAL batch: ', batch_idx, 'updating avg_val_acc for 3 inputs...')
             avg_val_acc.update(metrics['correct'].cpu().numpy())
             text_avg_val_acc.update(metrics['text_correct'].cpu().numpy())
             combined_avg_val_acc.update(metrics['combined_correct'].cpu().numpy())
@@ -165,9 +162,8 @@ class ExperimentRunnerBase:
 
     @torch.no_grad()
     def infer(self):
-        print('TESTING:')
+        
         self.load_model_for_eval()
-        print('Loading successful!')
         avg_test_loss = AverageMeter()
         avg_test_acc = AverageMeter()
         text_avg_test_acc = AverageMeter()
@@ -176,7 +172,6 @@ class ExperimentRunnerBase:
         for batch_idx, batch in enumerate(tqdm(self.test_loader)):
             # Get the model output and update the meters
             output = self.compute_loss(batch)
-            print('TEST batch: ', batch_idx, 'updating avg_val_acc for 3 inputs...')
             avg_test_acc.update(output['correct'].cpu().numpy())
             text_avg_test_acc.update(output['text_correct'].cpu().numpy())
             combined_avg_test_acc.update(output['combined_correct'].cpu().numpy())
