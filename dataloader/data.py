@@ -427,7 +427,9 @@ def get_triplet_dataloaders(data_root, batch_size, dataset='fsc', num_workers=0,
         test_dataset = FluentSpeechTripletDataset(data_root, 'test', train_dataset.intent_encoder, *args, **kwargs)
     elif dataset == 'snips':
         train_dataset = SnipsSLUTripletDataset(data_root, 'train', *args, **kwargs)
+        print(train_dataset.intent_encoder)
         val_dataset = SnipsSLUTripletDataset(data_root, 'valid', train_dataset.intent_encoder, *args, **kwargs)
+        print("val_dataset", val_dataset)
         test_dataset = SnipsSLUTripletDataset(data_root, 'test', train_dataset.intent_encoder, *args, **kwargs)
     else:
         raise ValueError("No valid dataset selected!")
