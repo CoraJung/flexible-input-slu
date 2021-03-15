@@ -151,6 +151,7 @@ class ExperimentRunnerBase:
         
         self.model.eval()
         print('model put in evaluation mode')
+        print(self.val_loader)
         for batch_idx, batch in enumerate(tqdm(self.val_loader)):
             print(batch_idx, batch)
             metrics = self.compute_loss(batch)
