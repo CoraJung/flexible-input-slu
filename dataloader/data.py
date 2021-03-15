@@ -81,7 +81,9 @@ class BaseDataset(Dataset):
 
 
 def triplet_getter(self, idx):
+    print("triple_getter function")
     fbank_feats, intent, encoding, transcription = self.load_audio(idx)
+    print(transcription)
 
     while True:
         pos_idx = np.random.choice(self.label2idx[intent])
