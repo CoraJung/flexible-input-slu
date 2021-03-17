@@ -282,6 +282,27 @@ def parse():
                         action='store_true',
                         help="decides if bert model is finetuned or frozen. default is false")
 
+    ### bert loader Parser ###
+    parser.add_argument("--bert-dir",
+                        default=None,
+                        help="load finetuned bert model")
+    
+    ### save criteria ###
+    parser.add_argument("--model-save-criteria",
+                        choices=['combined', 'audio_text'],
+                        default='audio_text',
+                        help="Criteria to save the best checkpoints")
+    
+    ### max_patience ###
+    parser.add_argument("--max-patience",
+                        type=int,
+                        default=5,
+                        help="Max patience for early stopping")
+    
+    ### checkpoint path ###
+    parser.add_argument("--checkpoint-dir",
+                        default=None,
+                        help="load best model state")
 
     args = parser.parse_args()
     return args

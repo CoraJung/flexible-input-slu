@@ -38,6 +38,7 @@ class ExperimentRunnerTriplet(ExperimentRunnerBase):
             num_classes = 6
         elif args.dataset == 'slurp':
             num_classes = 91
+            args.dataset = 'snips'
         else:
             raise ValueError("No valid dataset selected!")
 

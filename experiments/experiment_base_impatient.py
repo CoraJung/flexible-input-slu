@@ -36,11 +36,7 @@ class ExperimentRunnerBase:
                                                                  steps_per_epoch=len(self.train_loader),
                                                                  epochs=args.num_epochs)
         self.criterion = torch.nn.CrossEntropyLoss()
-        self.visualize = args.visualize
-        if self.visualize:
-            from torch.utils.tensorboard import SummaryWriter
-            self.writer = SummaryWriter()
-
+     
         # Training specific params
         self.args = args
         self.num_epochs = args.num_epochs
@@ -48,16 +44,23 @@ class ExperimentRunnerBase:
         self.val_every = args.val_every
         self.model_dir = args.model_dir
         self.save_every = args.save_every
+        self.checkpoint_dir = args.checkpoint_dir
+        self.max_patience = args.max_patience
+        print('Max_patience: ', self.max_patience)
 
     def train(self):
         # Setting the variables before starting the training
+        print('Loading checkpoint if checkpoint_dir is given...')
+        self.load_checkpoint()
+        
         avg_train_loss = AverageMeter()
         avg_train_acc = AverageMeter()
         text_avg_train_acc = AverageMeter()
         combined_avg_train_acc = AverageMeter()
         
         best_val_acc = -np.inf
-    
+        patience_counter = 0
+        best_epoch = self.num_epochs
         for epoch in range(self.num_epochs):
 
             self.model.print_frozen()
@@ -96,9 +99,6 @@ class ExperimentRunnerBase:
                 if step % self.val_every == 0:
                     val_loss, val_acc, text_val_acc, combined_val_acc = self.val()
                     print('Val acc (audio) = {:.4f}, Val acc (text) = {:.4f}, Val acc (combined) = {:.4f}, Val loss = {:.4f}'.format(val_acc, text_val_acc, combined_val_acc, val_loss))
-                    if self.visualize:
-                        self.writer.add_scalar('Val/loss', val_loss, step)
-                        self.writer.add_scalar('Val/acc', val_acc, step)
 
                     # Update the save the best validation checkpoint if needed
                     if self.args.model_save_criteria == 'audio_text':
@@ -112,15 +112,17 @@ class ExperimentRunnerBase:
                         best_chkpt_path = os.path.join(self.model_dir,
                                                        'best_ckpt.pth')
                         torch.save(self.model.state_dict(), best_chkpt_path)
-                        #print('Done saving best check point!')
+                        patience_counter = 0
+                        best_epoch = epoch
+                        print('Done saving best check point! Patience counter reset!')
+                    else:
+                        patience_counter += 1    
+                        if patience_counter > self.max_patience:
+                            print('Reach max patience limit. Training stops! Best val acc achieved at epoch: {}.'.format(epoch))
+                            break
                     if self.args.scheduler == 'plateau':
                         self.scheduler.step(audio_text_avg_acc)
 
-                if self.visualize:
-                    # Log data to
-                    self.writer.add_scalar('Train/loss', train_loss.item(), step)
-                    self.writer.add_scalar('Train/acc', train_acc, step)
-        
             self.model.unfreeze_one_layer()
 
     def compute_loss(self, batch):
@@ -128,6 +130,7 @@ class ExperimentRunnerBase:
         raise NotImplementedError
 
     def train_step(self, batch):
+        
         self.model.train()
         self.optimizer.zero_grad()
         metrics = self.compute_loss(batch)
@@ -140,6 +143,24 @@ class ExperimentRunnerBase:
             if self.args.eval_checkpoint_path is None else self.args.eval_checkpoint_path
         self.model.load_state_dict(torch.load(chkpt_path))
         self.model.eval()
+    
+    def load_checkpoint(self):
+        if self.checkpoint_dir is not None:
+            checkpoint_path = os.path.join(self.checkpoint_dir, 'best_ckpt.pth') 
+            print(f"Checkpoint path is given as {checkpoint_path}")
+        else:
+            print(f"Checkpoint path is not given!")          
+        if os.path.isfile(checkpoint_path):
+            print("Found best_ckpt.pth in given model path.")
+            try:
+                self.model.load_state_dict(torch.load(checkpoint_path))
+                print("Successfully loaded best checkpoint")
+                  
+            except:
+                print("Could not load previous model; starting from scratch")
+        else:
+            print("No previous model; starting from scratch")
+        self.model.train()
 
     @torch.no_grad()
     def val(self):

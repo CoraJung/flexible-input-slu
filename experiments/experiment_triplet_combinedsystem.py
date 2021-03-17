@@ -28,7 +28,7 @@ class ExperimentRunnerTriplet(ExperimentRunnerBase):
             data_dir = args.data_path
         else:
             raise ValueError("No data path was given!")
-
+        print('Dataset: ', args.dataset)
         # # Get the correct dataset directory
         if args.dataset == 'fsc':
             # data_dir = 'fluent'
@@ -36,10 +36,14 @@ class ExperimentRunnerTriplet(ExperimentRunnerBase):
         elif args.dataset == 'snips':
             # data_dir = 'snips_slu'
             num_classes = 6
+        
+        elif args.dataset == 'slurp':
+            num_classes = 91
+            args.dataset = 'snips'
         else:
             raise ValueError("No valid dataset selected!")
 
-        print(f"the dataset we are using is: {args.dataset}")
+        
 
         # Define the joint model
         self.model = JointModel(input_dim=40,
@@ -90,6 +94,7 @@ class ExperimentRunnerTriplet(ExperimentRunnerBase):
         super().__init__(args)
 
     def compute_loss(self, batch):
+        
         batch['feats'] = batch['feats'].to(self.device)
         batch['length'] = batch['length'].to(self.device)
         batch['encoded_text'] = batch['encoded_text'].to(self.device)
@@ -97,21 +102,27 @@ class ExperimentRunnerTriplet(ExperimentRunnerBase):
         batch['label'] = batch['label'].to(self.device)
 
         # Get the model outputs and the cross entropies
+        
         output = self.model(batch['feats'],
                             batch['length'],
                             batch['encoded_text'],
                             batch['text_length'])
+        #print('calc cross entropy...')
         audio_ce = self.criterion(output['audio_logits'], batch['label'])
+        #print('audio logits:', output['audio_logits'], ', label:', batch['label'])
         text_ce = self.criterion(output['text_logits'], batch['label'])
+        #print('text logits:', output['text_logits'], ', label:', batch['label'])
 
         # Triplet loss - positive instance
+        #print('getting positive instances for triplet loss...')
         batch['encoded_text2'] = batch['encoded_text2'].to(self.device)
         batch['text_length2'] = batch['text_length2'].to(self.device)
         with torch.no_grad():
             output_pos = self.model(input_text=batch['encoded_text2'],
                                     text_lengths=batch['text_length2'],
                                     text_only=True)
-
+        
+        #print('getting negative instances...')
         # Triplet loss - negative instance
         batch['encoded_text3'] = batch['encoded_text3'].to(self.device)
         batch['text_length3'] = batch['text_length3'].to(self.device)
@@ -126,6 +137,7 @@ class ExperimentRunnerTriplet(ExperimentRunnerBase):
         triplet_loss = triplet_loss.mean()
 
         # Define the joint loss
+        #print('calc joint loss...')
         loss = audio_ce + \
                (self.weight_text * text_ce) + \
                (self.weight_embedding * triplet_loss)
@@ -135,12 +147,14 @@ class ExperimentRunnerTriplet(ExperimentRunnerBase):
         accuracy = float(torch.sum(correct)) / predicted.shape[0]
         
         #Add combined system
+        #print('system combination...')
         combined_logits = (output['audio_logits']+output['text_logits'])/2
         combined_predicted = torch.argmax(combined_logits, dim=1)
         combined_correct = (combined_predicted == batch['label'])
         combined_accuracy = float(torch.sum(combined_correct)) / combined_predicted.shape[0]
 
         # Accuracy of text branch
+        #print('calc text branch acc...')
         text_predicted = torch.argmax(output['text_logits'], dim=1)
         text_correct = (text_predicted == batch['label'])
         text_accuracy = float(torch.sum(text_correct)) / text_predicted.shape[0]
@@ -156,3 +170,4 @@ class ExperimentRunnerTriplet(ExperimentRunnerBase):
                 'combined_accuracy': combined_accuracy,
                 'combined_predicted': combined_predicted,
                 'combined_correct': combined_correct}
+    

@@ -105,9 +105,11 @@ class ExperimentRunnerBase:
                    
                     if audio_text_avg_acc > best_val_acc:
                         best_val_acc = audio_text_avg_acc
+                        #print('Start saving best checkpoint...)
                         best_chkpt_path = os.path.join(self.model_dir,
                                                        'best_ckpt.pth')
                         torch.save(self.model.state_dict(), best_chkpt_path)
+                        #print('Done saving best checkpoint!!!)
                     if self.args.scheduler == 'plateau':
                         self.scheduler.step(audio_text_avg_acc)
 

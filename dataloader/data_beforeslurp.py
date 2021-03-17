@@ -35,16 +35,24 @@ class BaseDataset(Dataset):
 
         #-----------------------------------------------------------
         idx = idx % len(self.df) # just leave it just in case
-        # Emmy 11/06 - use direct path
+        ##################### Emmy 11/06 - use direct path
         # wav_path = os.path.join(self.base_path, self.df.loc[idx].path)
         wav_path = self.df.loc[idx].path
-        
+        print('wav_path:', wav_path)
         effect = torchaudio.sox_effects.SoxEffectsChain()
         effect.set_input_file(wav_path)
         wav, fs = effect.sox_build_flow_effects()
         
         x = wav[0].numpy()
         fbank_feats = x
+        print('fbank_feats.shape:', fbank_feats.shape)
+        # print(f"feature contents extracted from lugosch sox: {fbank_feats}")
+        # x = wav[0]
+        # if idx == 1:
+        #     print(f"lugosch audio features are: {x.size()}")
+        #     print(f"lugosch audio feature contents: {x}")
+        #     print(f"features extracted from kaldi mfcc: {fbank_feats.size()}")
+        #     print(f"feature contents extracted from kaldi mfcc: {fbank_feats}")
         #-------------------------------------------------------------
         intent = df_row['intent_label']
         encoding = self.bert_tokenizer.encode_plus(
@@ -73,16 +81,14 @@ class BaseDataset(Dataset):
 
 
 def triplet_getter(self, idx):
-    
+    print("triple_getter function")
     fbank_feats, intent, encoding, transcription = self.load_audio(idx)
-    
-    if len(self.label2idx[intent]) == 1:
-        pos_idx = idx
-    else:
-        while True:
-            pos_idx = np.random.choice(self.label2idx[intent])
-            if pos_idx != idx:
-                break
+    print(transcription)
+
+    while True:
+        pos_idx = np.random.choice(self.label2idx[intent])
+        if pos_idx != idx:
+            break
 
     neg_label = np.random.choice(list(self.labels_set - set([intent])))
     neg_idx = np.random.choice(self.label2idx[neg_label])
@@ -400,7 +406,7 @@ def get_pairwise_dataloaders(data_root, batch_size, dataset='fsc', num_workers=0
         train_dataset = FluentSpeechPairwiseDataset(data_root, 'train', *args, **kwargs)
         val_dataset = FluentSpeechPairwiseDataset(data_root, 'valid', train_dataset.intent_encoder, *args, **kwargs)
         test_dataset = FluentSpeechPairwiseDataset(data_root, 'test', train_dataset.intent_encoder, *args, **kwargs)
-    elif dataset == 'snips' or dataset == 'slurp':
+    elif dataset == 'snips':
         train_dataset = SnipsSLUPairwiseDataset(data_root, 'train', *args, **kwargs)
         val_dataset = SnipsSLUPairwiseDataset(data_root, 'valid', *args, **kwargs)
         test_dataset = SnipsSLUPairwiseDataset(data_root, 'test', *args, **kwargs)
@@ -421,9 +427,9 @@ def get_triplet_dataloaders(data_root, batch_size, dataset='fsc', num_workers=0,
         test_dataset = FluentSpeechTripletDataset(data_root, 'test', train_dataset.intent_encoder, *args, **kwargs)
     elif dataset == 'snips':
         train_dataset = SnipsSLUTripletDataset(data_root, 'train', *args, **kwargs)
-       
+        print(train_dataset.intent_encoder)
         val_dataset = SnipsSLUTripletDataset(data_root, 'valid', train_dataset.intent_encoder, *args, **kwargs)
-       
+        print("val_dataset", val_dataset)
         test_dataset = SnipsSLUTripletDataset(data_root, 'test', train_dataset.intent_encoder, *args, **kwargs)
     else:
         raise ValueError("No valid dataset selected!")
