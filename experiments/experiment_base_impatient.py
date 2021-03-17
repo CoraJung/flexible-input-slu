@@ -60,6 +60,7 @@ class ExperimentRunnerBase:
         
         best_val_acc = -np.inf
         patience_counter = 0
+        best_epoch = self.num_epochs
         for epoch in range(self.num_epochs):
 
             self.model.print_frozen()
@@ -112,11 +113,12 @@ class ExperimentRunnerBase:
                                                        'best_ckpt.pth')
                         torch.save(self.model.state_dict(), best_chkpt_path)
                         patience_counter = 0
+                        best_epoch = epoch
                         print('Done saving best check point! Patience counter reset!')
                     else:
                         patience_counter += 1    
-                        if patience_counter > max_patience:
-                            print('Reach max patience limit. Training stops!')
+                        if patience_counter > self.max_patience:
+                            print('Reach max patience limit. Training stops! Best val acc achieved at epoch: {}.'.format(epoch))
                             break
                     if self.args.scheduler == 'plateau':
                         self.scheduler.step(audio_text_avg_acc)
@@ -147,7 +149,7 @@ class ExperimentRunnerBase:
             print(f"Checkpoint path is given as {checkpoint_path}")
         else:
             print(f"Checkpoint path is not given!")          
-        if os.path.isfile(os.path.join(checkpoint_path, 'best_ckpt.pth')):
+        if os.path.isfile(checkpoint_path):
             print("Found best_ckpt.pth in given model path.")
             try:
                 self.model.load_state_dict(torch.load(checkpoint_path))
