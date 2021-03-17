@@ -26,7 +26,9 @@ if __name__ == '__main__':
 
     """ Import specified class with the experimental setup."""
     exp_args = args.experiment.split(".")
+    print('Using impatient mode...')
     exp_path = ".".join(exp_args[:-1])
+    print('exp_path: ', exp_path)
     exp_name = exp_args[-1]
     runner_class = getattr(__import__(exp_path, fromlist=[exp_name]), exp_name)
     runner = runner_class(args)
