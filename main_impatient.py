@@ -17,9 +17,8 @@ import torch
 import numpy as np
 
 args = parse()
-
 if __name__ == '__main__':
-    # args = parse()
+    
 
     """ Setting seed of the RNG in all packages."""
     torch.manual_seed(args.seed)
@@ -38,5 +37,4 @@ if __name__ == '__main__':
     if not args.infer_only:
         runner.train()
     runner.infer()
-
 
