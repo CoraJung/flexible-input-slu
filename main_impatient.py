@@ -27,6 +27,7 @@ if __name__ == '__main__':
     """ Import specified class with the experimental setup."""
     exp_args = args.experiment.split(".")
     print('Using impatient mode...')
+    print('exp_args: ', exp_agrs)
     exp_path = ".".join(exp_args[:-1])
     print('exp_path: ', exp_path)
     exp_name = exp_args[-1]
