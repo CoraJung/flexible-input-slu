@@ -16,9 +16,10 @@ from parser_impatient import parse
 import torch
 import numpy as np
 
+args = parse()
 
 if __name__ == '__main__':
-    args = parse()
+    # args = parse()
 
     """ Setting seed of the RNG in all packages."""
     torch.manual_seed(args.seed)
@@ -27,7 +28,7 @@ if __name__ == '__main__':
     """ Import specified class with the experimental setup."""
     exp_args = args.experiment.split(".")
     print('Using impatient mode...')
-    print('exp_args: ', exp_agrs)
+    print('exp_args: ', exp_args)
     exp_path = ".".join(exp_args[:-1])
     print('exp_path: ', exp_path)
     exp_name = exp_args[-1]
@@ -37,3 +38,5 @@ if __name__ == '__main__':
     if not args.infer_only:
         runner.train()
     runner.infer()
+
+
