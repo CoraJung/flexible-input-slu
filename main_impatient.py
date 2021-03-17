@@ -16,9 +16,9 @@ from parser_impatient import parse
 import torch
 import numpy as np
 
-args = parse()
+
 if __name__ == '__main__':
-    
+    args = parse()
 
     """ Setting seed of the RNG in all packages."""
     torch.manual_seed(args.seed)

@@ -112,18 +112,34 @@ class ExperimentRunnerBase:
                         best_chkpt_path = os.path.join(self.model_dir,
                                                        'best_ckpt.pth')
                         torch.save(self.model.state_dict(), best_chkpt_path)
-                        patience_counter = 0
-                        best_epoch = epoch
-                        print('Done saving best check point! Patience counter reset!')
-                    else:
-                        patience_counter += 1    
-                        if patience_counter > self.max_patience:
-                            print('Reach max patience limit. Training stops! Best val acc achieved at epoch: {}.'.format(epoch))
-                            break
+                        print('Done saving best check point!')
                     if self.args.scheduler == 'plateau':
                         self.scheduler.step(audio_text_avg_acc)
 
+            print('------ End of epoch validation ------')
+            val_loss, val_acc, text_val_acc, combined_val_acc = self.val()
+            # Update the save the best validation checkpoint if needed
+            if self.args.model_save_criteria == 'audio_text':
+                cur_avg_acc = (val_acc + text_val_acc) / 2
+            else: #'combined'
+                cur_avg_acc = combined_val_acc
+            
+            if cur_avg_acc > best_val_acc:
+                #print('Start saving best check point at step{}...'.format(step))
+                best_val_acc = cur_avg_acc
+                best_chkpt_path = os.path.join(self.model_dir,
+                                                'best_ckpt.pth')
+                torch.save(self.model.state_dict(), best_chkpt_path)
+                patience_counter = 0
+                best_epoch = epoch
+                print('Done saving best check point! Patience counter reset!')
+            else:
+                patience_counter += 1    
+                if patience_counter > self.max_patience:
+                    print('Reach max patience limit. Training stops! Best val acc achieved at epoch: {}.'.format(epoch))
+                    break
             self.model.unfreeze_one_layer()
+
 
     def compute_loss(self, batch):
         """ This function is specific to the kind of model we are training and must be implemented """
