@@ -50,6 +50,9 @@ class ExperimentRunnerBase:
 
     def train(self):
         # Setting the variables before starting the training
+        print('Loading checkpoint if checkpoint_dir is given...')
+        self.load_checkpoint()
+        
         avg_train_loss = AverageMeter()
         avg_train_acc = AverageMeter()
         text_avg_train_acc = AverageMeter()
@@ -127,6 +130,7 @@ class ExperimentRunnerBase:
         raise NotImplementedError
 
     def train_step(self, batch):
+        
         self.model.train()
         self.optimizer.zero_grad()
         metrics = self.compute_loss(batch)
