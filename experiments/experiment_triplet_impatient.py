@@ -28,6 +28,7 @@ class ExperimentRunnerTriplet(ExperimentRunnerBase):
             data_dir = args.data_path
         else:
             raise ValueError("No data path was given!")
+
         print('Dataset: ', args.dataset)
         # # Get the correct dataset directory
         if args.dataset == 'fsc':
@@ -61,8 +62,8 @@ class ExperimentRunnerTriplet(ExperimentRunnerBase):
             self.model = torch.nn.DataParallel(self.model)
         self.model.to(self.device)
         
-        print('Loading checkpoint if checkpoint_dir is given...')
-        self.load_checkpoint()
+        #print('Loading checkpoint if checkpoint_dir is given...')
+        #self.load_checkpoint()
 
         # Define the data loaders
         self.train_loader, \
