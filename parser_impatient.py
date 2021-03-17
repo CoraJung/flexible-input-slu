@@ -15,7 +15,7 @@
 import argparse
 
 def parse():
-    parser_impatient = argparse.Argumentparser_impatient(description="Run an experiment.",
+    parser_impatient = argparse.Argumentparser(description="Run an experiment.",
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
     parser_impatient.add_argument("--seed",
