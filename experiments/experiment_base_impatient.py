@@ -36,11 +36,7 @@ class ExperimentRunnerBase:
                                                                  steps_per_epoch=len(self.train_loader),
                                                                  epochs=args.num_epochs)
         self.criterion = torch.nn.CrossEntropyLoss()
-        self.visualize = args.visualize
-        if self.visualize:
-            from torch.utils.tensorboard import SummaryWriter
-            self.writer = SummaryWriter()
-
+     
         # Training specific params
         self.args = args
         self.num_epochs = args.num_epochs

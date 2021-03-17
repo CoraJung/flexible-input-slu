@@ -42,8 +42,7 @@ class ExperimentRunnerTriplet(ExperimentRunnerBase):
             args.dataset = 'snips'
         else:
             raise ValueError("No valid dataset selected!")
-
-        
+       
 
         # Define the joint model
         self.model = JointModel(input_dim=40,
@@ -62,6 +61,7 @@ class ExperimentRunnerTriplet(ExperimentRunnerBase):
             self.model = torch.nn.DataParallel(self.model)
         self.model.to(self.device)
         
+        print('Loading checkpoint if checkpoint_dir is given...')
         self.load_checkpoint()
 
         # Define the data loaders
