@@ -46,6 +46,7 @@ class ExperimentRunnerBase:
         self.save_every = args.save_every
         self.checkpoint_dir = args.checkpoint_dir
         self.max_patience = args.max_patience
+        print('Max_patience: ', self.max_patience)
 
     def train(self):
         # Setting the variables before starting the training
