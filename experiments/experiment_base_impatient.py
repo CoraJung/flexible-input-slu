@@ -44,7 +44,6 @@ class ExperimentRunnerBase:
         self.val_every = args.val_every
         self.model_dir = args.model_dir
         self.save_every = args.save_every
-        self.checkpoint_dir = args.checkpoint_dir
         self.max_patience = args.max_patience
         print('Max_patience: ', self.max_patience)
 
@@ -161,19 +160,17 @@ class ExperimentRunnerBase:
         self.model.eval()
     
     def load_checkpoint(self):
-        if self.checkpoint_dir is not None:
-            checkpoint_path = os.path.join(self.checkpoint_dir, 'best_ckpt.pth') 
-            print(f"Checkpoint path is given as {checkpoint_path}")
-        else:
-            print(f"Checkpoint path is not given!")          
-        if os.path.isfile(checkpoint_path):
-            print("Found best_ckpt.pth in given model path.")
-            try:
-                self.model.load_state_dict(torch.load(checkpoint_path))
-                print("Successfully loaded best checkpoint")
-                  
-            except:
-                print("Could not load previous model; starting from scratch")
+        if self.args.checkpoint_dir:
+            checkpoint_path = os.path.join(self.args.checkpoint_dir, 'best_ckpt.pth') 
+            print(f"Checkpoint path is given as {checkpoint_path}")         
+            if os.path.isfile(checkpoint_path):
+                print("Found best_ckpt.pth in given model path.")
+                try:
+                    self.model.load_state_dict(torch.load(checkpoint_path))
+                    print("Successfully loaded best checkpoint")
+                    
+                except:
+                    print("Could not load previous model; starting from scratch")
         else:
             print("No previous model; starting from scratch")
         self.model.train()
