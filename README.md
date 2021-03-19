@@ -1,8 +1,10 @@
 # IBM-NYU Project
 ## Alexa + Libri Merged End-to-End SLU Syatem
 
+The baseline code is adopted from Alexa End-to-End SLU System.
+
 This setup allows to train end-to-end neural models for spoken language understanding (SLU).
-It uses either the Snips SLU or the Fluent Speech dataset (FSC).
+It uses the Snips SLU or the Fluent Speech dataset (FSC), or SLURP SLU.
 This framework is built using pytorch with torchaudio and the transformer package from HuggingFace.
 We tested using pytorch 1.5.0 and torchaudio 0.5.0.
 
