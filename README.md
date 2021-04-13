@@ -1,10 +1,11 @@
 # IBM-NYU Project
-## Alexa + Libri Merged End-to-End SLU Syatem
+## ASR-Text-Speech End-to-End SLU Model
 
-The baseline code is adopted from Alexa End-to-End SLU System.
+The baseline code is adopted from Alexa End-to-End SLU System: https://github.com/alexa/alexa-end-to-end-slu. 
+The original setup is a cross-modal system that co-trains text embeddings and acoustic embeddings in a shared latent space.
+We further enhance this system by utilizing an acoustic module pre-trained on LibriSpeech and domain-adapting the text module on our target datasets.
 
-This setup allows to train end-to-end neural models for spoken language understanding (SLU).
-It uses the Snips SLU or the Fluent Speech dataset (FSC), or SLURP SLU.
+The model uses the Snips SLU, the Fluent Speech dataset (FSC), or SLURP SLU with speech, ground truth and ASR transcripts as training inputs.
 This framework is built using pytorch with torchaudio and the transformer package from HuggingFace.
 We tested using pytorch 1.5.0 and torchaudio 0.5.0.
 
@@ -13,7 +14,7 @@ We tested using pytorch 1.5.0 and torchaudio 0.5.0.
 To install the required python packages, please run `pip install -r requirements.txt`. This setup uses the `bert-base-cased` model.
 Typically, the model will be downloaded (and cached) automatically when running the training for the first time.
 In case you want to download the model explicitly, you can run the `download_bert.py` script from the `dataprep/` directory,
-e.g. `python download_bert.py bert-base-cased ./models/bert-base-cased`
+e.g. `python download_bert.py bert-base-cased ./models/bert-base-cased`. The environment set up is the same as alexa-slu git repository.
 
 This setup expects the FluentSpeechCommands dataset to reside under `fluent/` and the Snips SLU dataset under `snips_slu/`.
 Please download and extract the datasets to these locations (or create a symlink).
@@ -24,17 +25,21 @@ This will generate additional files within the `snips_slu/` folder required by t
 
 Core to running experiments is the `train.py` script.
 When called without any parameters, it will train a model using triplet loss on the FSC dataset.
-The default location for saving intermediate results is the `runs/` directory.
+The default location for saving intermediate results is the pre-specified `--model-dir` directory.
 In case it does not yet exist, it will be created.
 
 To customize the experiments, several command line options are available (for a full list, please refer to `parser.py`):
 
 * --dataset (The dataset to use, e.g. `fsc`)
 * --experiment (The experiment class to run, e.g. `experiments.experiment_triplet.ExperimentRunnerTriplet`)
-* --scheduler (Learning rate scheduler)
-* --output-prefix (The prefix under which the training artifacts are being stored.)
-* --bert-model-name (Name or path of pretrained BERT model to use)
 * --infer-only (Only run inference on the saved model)
+* --learning-rate-bert (The learning rate for BERT branch only)
+* --learning-rate (The learning for the acoustic branch and shared classifier)
+* --scheduler (Learning rate scheduler)
+* --finetune-bert (A boolean parameter indicating whether or not to fine-tune pre-trained BERT)
+* --bert-dir (The directory to load pre-trained or domain-adapted BERT model)
+* --model-save-criteria (The criteria to select the best checkpoints, ie. best validation audio accuracy or the average of validation audio + text accuracy)
+* --model-dir (The directory to save the best checkpoint)
 
 ## Example runs
 
