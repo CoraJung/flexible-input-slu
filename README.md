@@ -37,7 +37,7 @@ To customize the experiments, several command line options are available (for a 
 * --scheduler (Learning rate scheduler)
 * --finetune-bert (A boolean parameter indicating whether or not to fine-tune pre-trained BERT)
 * --bert-dir (The directory to load pre-trained or domain-adapted BERT model)
-* --model-save-criteria (The criteria to select the best checkpoints, ie. best validation audio accuracy or the average of validation audio + text accuracy)
+* --model-save-criteria (The criteria to select the best checkpoints, e.g. best validation audio accuracy or the average of validation audio + text accuracy)
 * --model-dir (The directory to save the best checkpoint)
 
 ## Example runs
