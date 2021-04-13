@@ -11,13 +11,12 @@ We tested using pytorch 1.5.0 and torchaudio 0.5.0.
 
 ## Installation and data preparation
 
+The environment set up is the same as alexa-slu git repository.
 To install the required python packages, please run `pip install -r requirements.txt`. This setup uses the `bert-base-cased` model.
 Typically, the model will be downloaded (and cached) automatically when running the training for the first time.
 In case you want to download the model explicitly, you can run the `download_bert.py` script from the `dataprep/` directory,
-e.g. `python download_bert.py bert-base-cased ./models/bert-base-cased`. The environment set up is the same as alexa-slu git repository.
+e.g. `python download_bert.py bert-base-cased ./models/bert-base-cased`. 
 
-This setup expects the FluentSpeechCommands dataset to reside under `fluent/` and the Snips SLU dataset under `snips_slu/`.
-Please download and extract the datasets to these locations (or create a symlink).
 To preprocess the Snips dataset, please run `prepare_snips.py` (located in the `dataprep/` directory) from within the `snips_slu/` folder dataset.
 This will generate additional files within the `snips_slu/` folder required by the dataloader.
 
