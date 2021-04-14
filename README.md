@@ -50,7 +50,9 @@ Training these following models with either Snips SLU or Fluent Speech Commands 
 
 `python train.py --dataset=snips --data-path=$ASR_GT_DATA_DIR --finetune-bert` 
 
-Final test acc = 0.9518, test loss = 0.1200
+Final test acc = 0.7892, test loss = 1.0674 (*)
+
+(*Note that this test result depends on the test input. The test input for this example is ASR.)
 
 ### Text-Speech Model (e.g. inputs: Snips SLU - GT+Speech)
 
