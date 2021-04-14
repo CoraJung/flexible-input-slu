@@ -67,7 +67,7 @@ Final test acc (audio) = 0.7590, final test acc (text) = 0.9819 test loss = 1.79
 Final test acc (audio) = 0.7831, final test acc (text)* = 0.8373, final test acc (combined system) = 0.8976, test loss = 2.1859
 
 (*Note that this 'text' and 'combined system' test accuracy depends on your test input for the text branch (e.g. GT, ASR or GT+ASR). 
-In this example above our test input for the text branch is ASR, thus the 'text' here refers to ASR and 'combined system' refers to ASR-Speech.)
+In this example above our test input for the text branch is ASR, thus the 'text' here refers to ASR and 'combined system' refers to ASR-Speech.*)
 
 ### ASR-Text-Speech-2 Model (e.g. inputs: Snips SLU - ASR+GT+Speech)
 
@@ -75,7 +75,7 @@ In this example above our test input for the text branch is ASR, thus the 'text'
 
 Final test acc (audio) = 0.8012, final test acc (text) = 0.8072, final test acc (combined system) = 0.8675, test loss = 2.7360
 
-(*Note that $BERT_DIR is the directory that contains the best checkpoint of the ASR-Text model trained on Snips SLU in this example.)
+(*Note that $BERT_DIR is the directory that contains the best checkpoint of the ASR-Text model trained on Snips SLU in this example.*)
 
 ## Security
 
