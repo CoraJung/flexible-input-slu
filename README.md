@@ -52,7 +52,7 @@ Training these following models with either Snips SLU or Fluent Speech Commands 
 
 `python train.py --dataset=snips --data-path=$ASR_GT_DATA_DIR --finetune-bert` 
 
-Final test acc = 0.7892, test loss = 1.0674 (*)
+Final test acc = 0.7892, test loss = 1.0674
 
 (*Note that this test result depends on the test input. The test input for this example is ASR.*)
 
@@ -66,7 +66,7 @@ Final test acc (audio) = 0.7590, final test acc (text) = 0.9819 test loss = 1.79
 
 `python train.py --dataset=snips --data-path=$ASR_GT_SPEECH_DATA_DIR --finetune-bert --unfreezing-type=1`
 
-Final test acc (audio) = 0.7831, final test acc (text)* = 0.8373, final test acc (combined system) = 0.8976, test loss = 2.1859
+Final test acc (audio) = 0.7831, final test acc (text) = 0.8373, final test acc (combined system) = 0.8976, test loss = 2.1859
 
 (*Note that this 'text' and 'combined system' test accuracy depends on your test input for the text branch (e.g. GT, ASR or GT+ASR). 
 In this example above our test input for the text branch is ASR, thus the 'text' here refers to ASR and 'combined system' refers to ASR-Speech.*)
