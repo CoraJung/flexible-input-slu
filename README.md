@@ -1,4 +1,5 @@
-# IBM-NYU Project
+# Speak or Chat with Me: End-to-End Spoken Language Understanding System with Flexible Inputs
+
 ## ASR-Text-Speech End-to-End SLU Model
 
 [Paper](https://arxiv.org/abs/2104.03842) submitted to Interspeech 2021.
