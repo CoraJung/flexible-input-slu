@@ -46,22 +46,34 @@ To customize the experiments, several command line options are available (for a 
 Training these following models with either Snips SLU or Fluent Speech Commands should produce the following results:
 (GT: ground truth transcripts, ASR: automatic speech recognition transcripts)
 
-### Text-Only Model (e.g. inputs: Snips SLU - GT)
+### ASR-Text Model (e.g. inputs: Snips SLU - ASR+GT)
 
-`python train.py --dataset=snips --data-path=$DATA_DIR --finetune-bert` 
+`python train.py --dataset=snips --data-path=$ASR_GT_DATA_DIR --finetune-bert` 
 
-Final test acc = 0.9578, test loss = 0.1200
+Final test acc = 0.9518, test loss = 0.1200
 
 ### Text-Speech Model (e.g. inputs: Snips SLU - GT+Speech)
 
-`python train.py --dataset=snips --data-path=$DATA_DIR --finetune-bert --unfreezing-type=1`
+`python train.py --dataset=snips --data-path=$GT_SPEECH_DATA_DIR --finetune-bert --unfreezing-type=2`
 
-Final test acc (audio) = 0.7048, final test acc (text) = 0.9759 test loss = 1.7919
+Final test acc (audio) = 0.7590, final test acc (text) = 0.9819 test loss = 1.7919
 
 ### ASR-Text-Speech-1 Model (e.g. inputs: Snips SLU - ASR+GT+Speech)
 
-`python train.py --dataset=snips --data-path=$DATA_DIR --finetune-bert --unfreezing-type=1`
+`python train.py --dataset=snips --data-path=$ASR_GT_SPEECH_DATA_DIR --finetune-bert --unfreezing-type=1`
 
+Final test acc (audio) = 0.7831, final test acc (text)* = 0.8373, final test acc (combined system) = 0.8976, test loss = 2.1859
+
+(*Note that this 'text' and 'combined system' test accuracy depends on your test input for the text branch (e.g. GT, ASR or GT+ASR). 
+In this example above our test input for the text branch is ASR, thus the 'text' here refers to ASR and 'combined system' refers to ASR-Speech.)
+
+### ASR-Text-Speech-2 Model (e.g. inputs: Snips SLU - ASR+GT+Speech)
+
+`python train.py --dataset=snips --data-path=$ASR_GT_SPEECH_DATA_DIR --bert-dir=$BERT_DIR* --unfreezing-type=2`
+
+Final test acc (audio) = 0.8012, final test acc (text) = 0.8072, final test acc (combined system) = 0.8675, test loss = 2.7360
+
+(*Note that $BERT_DIR is the directory that contains the best checkpoint of the ASR-Text model trained on Snips SLU in this example.)
 
 ## Security
 
