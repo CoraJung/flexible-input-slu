@@ -39,22 +39,28 @@ To customize the experiments, several command line options are available (for a 
 * --bert-dir (The directory to load pre-trained or domain-adapted BERT model)
 * --model-save-criteria (The criteria to select the best checkpoints, e.g. best validation audio accuracy or the average of validation audio + text accuracy)
 * --model-dir (The directory to save the best checkpoint)
+* --unfreezing-type (Choose how many of the pre-trained acoustic layers to fine-tune, e.g. 1: fine-tune only the word module, 2: fine-tune both phoneme and word modules)
 
 ## Example runs
 
-To check if everything is installed correctly, training a model with either Snips SLU or Fluent Speech Commands should produce the following results:
+Training these following models with either Snips SLU or Fluent Speech Commands should produce the following results:
+(GT: ground truth transcripts, ASR: automatic speech recognition transcripts)
 
-### Fluent Speech Commands
+### Text-Only Model (e.g. inputs: Snips SLU - GT)
 
-`python train.py --dataset fsc`
+`python train.py --dataset=snips --data-path=$DATA_DIR --finetune-bert` 
 
-Final test acc = 0.9565, test loss = 0.5085
+Final test acc = 0.9578, test loss = 0.1200
 
-### Snips SLU
+### Text-Speech Model (e.g. inputs: Snips SLU - GT+Speech)
 
-`python train.py --dataset snips`
+`python train.py --dataset=snips --data-path=$DATA_DIR --finetune-bert --unfreezing-type=1`
 
-Final test acc = 0.6988, test loss = 2.2471
+Final test acc (audio) = 0.7048, final test acc (text) = 0.9759 test loss = 1.7919
+
+### ASR-Text-Speech-1 Model (e.g. inputs: Snips SLU - ASR+GT+Speech)
+
+`python train.py --dataset=snips --data-path=$DATA_DIR --finetune-bert --unfreezing-type=1`
 
 
 ## Security
