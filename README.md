@@ -39,9 +39,9 @@ To customize the experiments, several command line options are available (for a 
 * --scheduler (Learning rate scheduler)
 * --finetune-bert (A boolean parameter indicating whether or not to fine-tune pre-trained BERT)
 * --bert-dir (The directory to load pre-trained or domain-adapted BERT model)
-* --model-save-criteria (The criteria to select the best checkpoints, e.g. best validation audio accuracy or the average of validation audio + text accuracy)
+* --model-save-criteria (The criteria to select the best checkpoints, e.g. `combined`: the average of validation audio + text accuracy)
 * --model-dir (The directory to save the best checkpoint)
-* --unfreezing-type (Choose how many of the pre-trained acoustic layers to fine-tune, e.g. 1: fine-tune only the word module, 2: fine-tune both phoneme and word modules)
+* --unfreezing-type (Choose how many of the pre-trained acoustic layers to fine-tune, e.g. `1`: fine-tune only the word module, `2`: fine-tune both phoneme and word modules)
 
 ## Example runs
 
