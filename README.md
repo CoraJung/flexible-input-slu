@@ -1,9 +1,9 @@
 # IBM-NYU Project
 ## ASR-Text-Speech End-to-End SLU Model
 
-Paper[https://arxiv.org/abs/2104.03842] submitted to Interspeech 2020.
+[Paper](https://arxiv.org/abs/2104.03842) submitted to Interspeech 2020.
 
-The baseline code is adopted from Alexa End-to-End SLU System [https://github.com/alexa/alexa-end-to-end-slu]. 
+The baseline code is adopted from [Alexa End-to-End SLU System](https://github.com/alexa/alexa-end-to-end-slu). 
 The original setup is a cross-modal system that co-trains text embeddings and acoustic embeddings in a shared latent space.
 We further enhance this system by utilizing an acoustic module pre-trained on LibriSpeech and domain-adapting the text module on our target datasets.
 
