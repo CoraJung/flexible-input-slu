@@ -1,7 +1,7 @@
 # IBM-NYU Project
 ## ASR-Text-Speech End-to-End SLU Model
 
-[Paper](https://arxiv.org/abs/2104.03842) submitted to Interspeech 2020.
+[Paper](https://arxiv.org/abs/2104.03842) submitted to Interspeech 2021.
 
 The baseline code is adopted from [Alexa End-to-End SLU System](https://github.com/alexa/alexa-end-to-end-slu). 
 The original setup is a cross-modal system that co-trains text embeddings and acoustic embeddings in a shared latent space.
@@ -50,7 +50,7 @@ Training these following models with either Snips SLU or Fluent Speech Commands 
 
 ### ASR-Text Model (e.g. inputs: Snips SLU - ASR+GT)
 
-`python train.py --dataset=snips --data-path=$ASR_GT_DATA_DIR --finetune-bert` 
+`python train.py --dataset=<snips or fsc> --data-path=<path to ASR + GT data> --finetune-bert` 
 
 Final test acc = 0.7892, test loss = 1.0674
 
@@ -58,13 +58,13 @@ Final test acc = 0.7892, test loss = 1.0674
 
 ### Text-Speech Model (e.g. inputs: Snips SLU - GT+Speech)
 
-`python train.py --dataset=snips --data-path=$GT_SPEECH_DATA_DIR --finetune-bert --unfreezing-type=2`
+`python train.py --dataset=<snips or fsc> --data-path=<path to speech + GT data> --finetune-bert --unfreezing-type=2`
 
 Final test acc (audio) = 0.7590, final test acc (text) = 0.9819 test loss = 1.7919
 
 ### ASR-Text-Speech-1 Model (e.g. inputs: Snips SLU - ASR+GT+Speech)
 
-`python train.py --dataset=snips --data-path=$ASR_GT_SPEECH_DATA_DIR --finetune-bert --unfreezing-type=1`
+`python train.py --dataset=<snips or fsc> --data-path=<path to ASR + GT + Speech data> --finetune-bert --unfreezing-type=1`
 
 Final test acc (audio) = 0.7831, final test acc (text) = 0.8373, final test acc (combined system) = 0.8976, test loss = 2.1859
 
@@ -73,7 +73,7 @@ In this example above our test input for the text branch is ASR, thus the 'text'
 
 ### ASR-Text-Speech-2 Model (e.g. inputs: Snips SLU - ASR+GT+Speech)
 
-`python train.py --dataset=snips --data-path=$ASR_GT_SPEECH_DATA_DIR --bert-dir=$BERT_DIR* --unfreezing-type=2`
+`python train.py --dataset=<snips or fsc> --data-path=<path to ASR + GT + Speech data> --bert-dir=<path to pre-trained BERT model> --unfreezing-type=2`
 
 Final test acc (audio) = 0.8012, final test acc (text) = 0.8072, final test acc (combined system) = 0.8675, test loss = 2.7360
 
