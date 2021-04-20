@@ -2,15 +2,23 @@
 
 ## ASR-Text-Speech End-to-End SLU Model
 
-[Paper](https://arxiv.org/abs/2104.03842) submitted to Interspeech 2021.
+[Papersubmitted to Interspeech 2021.](https://arxiv.org/abs/2104.05752) 
 
 The baseline code is adopted from [Alexa End-to-End SLU System](https://github.com/alexa/alexa-end-to-end-slu). 
 The original setup is a cross-modal system that co-trains text embeddings and acoustic embeddings in a shared latent space.
-We further enhance this system by utilizing an acoustic module pre-trained on LibriSpeech and domain-adapting the text module on our target datasets.
+We further enhance this system by utilizing an acoustic module pre-trained on LibriSpeech and domain-adapting the text module on our target datasets. The pre-trained acoustic module is adopted from [Loren Lugosch](https://github.com/lorenlugosch/end-to-end-SLU).
 
-The model uses the Snips SLU, the Fluent Speech dataset (FSC), or SLURP SLU with speech, ground truth and ASR transcripts as training inputs.
 This framework is built using pytorch with torchaudio and the transformer package from HuggingFace.
 We tested using pytorch 1.5.0 and torchaudio 0.5.0.
+
+## Data source
+
+The model uses the Snips SLU or the Fluent Speech dataset (FSC) with speech, ground truth and ASR transcripts as training inputs.
+- [Snips SLU](https://arxiv.org/pdf/1810.12735.pdf)
+To make our results comparable to the original by [Markus et. al.](https://github.com/alexa/alexa-end-to-end-slu), we use the same partition of the data, which was kindly given to us by the author, Markus Mueller.
+- [Fluent Speech Command (FSC)](https://zenodo.org/record/3509828#.YH8fauhKhPZ)
+- ASR Transcripts
+As mentioned in the paper, we generate ASR transcripts by passing the audio inputs to an existing ASR model trained on LibriSpeech using the Kaldi Speech Recognition toolkit. We are planning to share the data (.csv) with ASR transcripts in this repo.
 
 ## Installation and data preparation
 
@@ -19,9 +27,6 @@ To install the required python packages, please run `pip install -r requirements
 Typically, the model will be downloaded (and cached) automatically when running the training for the first time.
 In case you want to download the model explicitly, you can run the `download_bert.py` script from the `dataprep/` directory,
 e.g. `python download_bert.py bert-base-cased ./models/bert-base-cased`. 
-
-To preprocess the Snips dataset, please run `prepare_snips.py` (located in the `dataprep/` directory) from within the `snips_slu/` folder dataset.
-This will generate additional files within the `snips_slu/` folder required by the dataloader.
 
 ## Running experiments
 
@@ -49,40 +54,47 @@ To customize the experiments, several command line options are available (for a 
 Training these following models with either Snips SLU or Fluent Speech Commands should produce the following results:
 (GT: ground truth transcripts, ASR: automatic speech recognition transcripts)
 
-### ASR-Text Model (e.g. inputs: Snips SLU - ASR+GT)
 
-`python train.py --dataset=<snips or fsc> --data-path=<path to ASR + GT data> --finetune-bert` 
+### ASR-Text Model (e.g. inputs: Snips SLU - ASR+GT train data, ASR test data)
 
-Final test acc = 0.7892, test loss = 1.0674
+`python train.py --dataset=snips --data-path=<path to input data> --finetune-bert` 
 
-(*Note that this test result depends on the test input. The test input for this example is ASR.*)
+Final test acc = 0.7892 (Table 3 in the paper)
 
-### Text-Speech Model (e.g. inputs: Snips SLU - GT+Speech)
+To evaluate the trained model on a different test set (e.g. GT data), run:
 
-`python train.py --dataset=<snips or fsc> --data-path=<path to speech + GT data> --finetune-bert --unfreezing-type=2`
+`python train.py --dataset=snips --data-path=<path to input data> --infer-only`
 
-Final test acc (audio) = 0.7590, final test acc (text) = 0.9819 test loss = 1.7919
+Final test acc = 1.0000 (Table 3)
 
-### ASR-Text-Speech-1 Model (e.g. inputs: Snips SLU - ASR+GT+Speech)
 
-`python train.py --dataset=<snips or fsc> --data-path=<path to ASR + GT + Speech data> --finetune-bert --unfreezing-type=1`
+### Text-Speech Model (e.g. inputs: Snips SLU - GT+Speech train data, ASR+Speech test data)
 
-Final test acc (audio) = 0.7831, final test acc (text) = 0.8373, final test acc (combined system) = 0.8976, test loss = 2.1859
+`python train.py --dataset=snips --data-path=<path to input data> --finetune-bert --unfreezing-type=2`
+
+Final test acc (audio) = 0.7590, final test acc (text) = 0.7831 (Table 1)
+
+Similarly, add the `--infer-only` argument to perform inference-only on a different test set.
+
+
+### ASR-Text-Speech-1 Model (e.g. inputs: Snips SLU - ASR+GT+Speech train data, ASR+Speech test data)
+
+`python train.py --dataset=snips --data-path=<path to input data> --finetune-bert --unfreezing-type=1`
+
+Final test acc (audio) = 0.7831, final test acc (text) = 0.8373, final test acc (combined system) = 0.8976 (Table 1)
 
 (*Note that this 'text' and 'combined system' test accuracy depends on your test input for the text branch (e.g. GT, ASR or GT+ASR). 
 In this example above our test input for the text branch is ASR, thus the 'text' here refers to ASR and 'combined system' refers to ASR-Speech.*)
 
-### ASR-Text-Speech-2 Model (e.g. inputs: Snips SLU - ASR+GT+Speech)
 
-`python train.py --dataset=<snips or fsc> --data-path=<path to ASR + GT + Speech data> --bert-dir=<path to pre-trained BERT model> --unfreezing-type=2`
+### ASR-Text-Speech-2 Model (e.g. inputs: Snips SLU - ASR+GT+Speech train data, ASR+Speech test data)
 
-Final test acc (audio) = 0.8012, final test acc (text) = 0.8072, final test acc (combined system) = 0.8675, test loss = 2.7360
+`python train.py --dataset=snips --data-path=<path to input data> --bert-dir=<path to pre-trained BERT model> --unfreezing-type=2`
+
+Final test acc (audio) = 0.8012, final test acc (text) = 0.8072, final test acc (combined system) = 0.8675 (Table 1)
 
 (*Note that $BERT_DIR is the directory that contains the best checkpoint of the ASR-Text model trained on Snips SLU in this example.*)
 
-## Security
-
-See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more information.
 
 ## License
 
