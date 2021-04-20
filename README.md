@@ -6,7 +6,7 @@
 
 The baseline code is adopted from [Alexa End-to-End SLU System](https://github.com/alexa/alexa-end-to-end-slu). 
 The original setup is a cross-modal system that co-trains text embeddings and acoustic embeddings in a shared latent space.
-We further enhance this system by utilizing an acoustic module pre-trained on LibriSpeech and domain-adapting the text module on our target datasets. The pre-trained acoustic module is adopted from [End-to-End SLU by Loren Lugosch](https://github.com/lorenlugosch/end-to-end-SLU).
+We further enhance this system by utilizing an acoustic module pre-trained on LibriSpeech and domain-adapting the text module on our target datasets. The pre-trained acoustic module is adopted from [End-to-End SLU](https://github.com/lorenlugosch/end-to-end-SLU).
 
 This framework is built using pytorch with torchaudio and the transformer package from HuggingFace.
 We tested using pytorch 1.5.0 and torchaudio 0.5.0.
