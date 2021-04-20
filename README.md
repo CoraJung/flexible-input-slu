@@ -95,6 +95,10 @@ Final test acc (audio) = 0.8012, final test acc (text) = 0.8072, final test acc 
 
 (*Note that $BERT_DIR is the directory that contains the best checkpoint of the ASR-Text model trained on Snips SLU in this example.*)
 
+## Citation
+If you find this repo useful, please cite our papers:
+
+Sujeong Cha, Wangrui Hou, Hyun Jung, My Phung, Michael Picheny, Hong-Kwang Kuo, Samuel Thomas, Edmilson Morais, "Speak or Chat with Me: End-to-End Spoken Language Understanding System with Flexible Inputs", arXiv:2104.05752.
 
 ## License
 
