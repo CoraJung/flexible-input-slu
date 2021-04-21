@@ -1,5 +1,3 @@
-# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
-#
 # Licensed under the Apache License, Version 2.0 (the "License").
 # You may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -22,19 +20,10 @@ import json
 data_root = '/misc/vlgscratch5/PichenyGroup/s2i-common/alexa-slu/snips_slu'
 df = pd.read_csv(os.path.join(data_root, 'data/complete.csv'))
 
-# new_paths = [os.path.join('wavs', 'audio', os.path.basename(path)) for path in df['path']]
-# df['path'] = new_paths
-
-# we use intent_encoder in BaseSnipsSLUDataset instead of json file
-# with open(os.path.join(data_root, 'data', 'intents.json'), 'r') as f:
-#     intent_label_dict = json.load(f)
-
 # Extract only the intent from the semantics string. This is very hacky
 intent_text_list = [semantics[12:].split("'")[0] for semantics in df['semantics']] #"SwitchLightOn"
-# intent_labels_list = [intent_label_dict[intent_text] for intent_text in intent_text_list]
 
 df['intent'] = intent_text_list
-# df['intent_label'] = intent_labels_list 
 
 # Split dataset into 80-10-10 train/dev/test
 df_train, df_valtest = train_test_split(df, test_size=0.2, random_state=42)

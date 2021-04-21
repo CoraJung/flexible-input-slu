@@ -9,7 +9,6 @@ import pandas as pd
 from torch.utils.data import Dataset, DataLoader
 import os
 
-# Step 1: Read the data
 def read_data(data_root):
     data_root = data_root
   
@@ -19,9 +18,6 @@ def read_data(data_root):
         
     return df_train, df_val, df_test
 
-#main: 
-
-# Step 2: Encode intent labels
 class IntentEncoder(Dataset):
     '''
     Read dataset from args
@@ -71,7 +67,6 @@ class BaseDataset(IntentEncoder):
     def __getitem__(self, idx):
         return self.encode_text(idx)
 
-# Step 4: Put everything into DataLoader
 def default_collate_classifier(inputs):
     '''
     Pads and collates into a batch for training
@@ -82,7 +77,7 @@ def default_collate_classifier(inputs):
         'encoded_text': (B,) encoded text of each utterance
     '''
    
-    labels = [data['label'] for data in inputs] #inputs= batch contains X data (=dictionary)
+    labels = [data['label'] for data in inputs] 
     encoded_text = [data['encoded_text'] for data in inputs]
     text_lengths = [data['text_length'] for data in inputs]
     padded_text = rnn.pad_sequence(encoded_text, batch_first=True)
@@ -104,5 +99,3 @@ def get_dataloaders(data_root, batch_size, dataset='snips', num_workers=0, *args
     test_loader = DataLoader(test_dataset, batch_size=batch_size, collate_fn=default_collate_classifier, num_workers=num_workers)
 
     return train_loader, val_loader, test_loader
-
-

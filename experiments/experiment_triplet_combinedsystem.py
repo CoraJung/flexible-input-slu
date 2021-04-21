@@ -1,5 +1,3 @@
-# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
-#
 # Licensed under the Apache License, Version 2.0 (the "License").
 # You may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -28,29 +26,25 @@ class ExperimentRunnerTriplet(ExperimentRunnerBase):
             data_dir = args.data_path
         else:
             raise ValueError("No data path was given!")
-        print('Dataset: ', args.dataset)
-        # # Get the correct dataset directory
+        # Set the dataset argument
         if args.dataset == 'fsc':
-            # data_dir = 'fluent'
             num_classes = 31
         elif args.dataset == 'snips':
-            # data_dir = 'snips_slu'
             num_classes = 6
-        
         elif args.dataset == 'slurp':
             num_classes = 91
             args.dataset = 'snips'
         else:
             raise ValueError("No valid dataset selected!")
 
+        print('Dataset: ', args.dataset)
         
-
         # Define the joint model
         self.model = JointModel(input_dim=40,
                                 num_layers=args.num_enc_layers,
                                 num_classes=num_classes,
-                                encoder_dim=args.enc_dim,#128
-                                bert_pretrained=not args.bert_random_init, # == True (not False) in default, true
+                                encoder_dim=args.enc_dim,
+                                bert_pretrained=not args.bert_random_init, 
                                 bert_pretrained_model_name=args.bert_model_name,
                                 config=args)
 
@@ -76,13 +70,13 @@ class ExperimentRunnerTriplet(ExperimentRunnerBase):
             print('Finetuning BERT')
             self.optimizer = torch.optim.Adam([
                 {'params': self.model.bert.parameters(), 'lr':args.learning_rate_bert}, 
-                {'params': self.model.lugosch_model.parameters()},
+                {'params': self.model.acoustic_encoder.parameters()},
                 {'params': self.model.classifier.parameters()}
             ], lr=args.learning_rate)
         else: 
             print('Freezing BERT')
             self.optimizer = torch.optim.Adam([ 
-                {'params': self.model.lugosch_model.parameters()},
+                {'params': self.model.acoustic_encoder.parameters()},
                 {'params': self.model.classifier.parameters()}
             ], lr=args.learning_rate)
         
@@ -102,19 +96,14 @@ class ExperimentRunnerTriplet(ExperimentRunnerBase):
         batch['label'] = batch['label'].to(self.device)
 
         # Get the model outputs and the cross entropies
-        
         output = self.model(batch['feats'],
                             batch['length'],
                             batch['encoded_text'],
                             batch['text_length'])
-        #print('calc cross entropy...')
         audio_ce = self.criterion(output['audio_logits'], batch['label'])
-        #print('audio logits:', output['audio_logits'], ', label:', batch['label'])
         text_ce = self.criterion(output['text_logits'], batch['label'])
-        #print('text logits:', output['text_logits'], ', label:', batch['label'])
 
         # Triplet loss - positive instance
-        #print('getting positive instances for triplet loss...')
         batch['encoded_text2'] = batch['encoded_text2'].to(self.device)
         batch['text_length2'] = batch['text_length2'].to(self.device)
         with torch.no_grad():
@@ -122,7 +111,6 @@ class ExperimentRunnerTriplet(ExperimentRunnerBase):
                                     text_lengths=batch['text_length2'],
                                     text_only=True)
         
-        #print('getting negative instances...')
         # Triplet loss - negative instance
         batch['encoded_text3'] = batch['encoded_text3'].to(self.device)
         batch['text_length3'] = batch['text_length3'].to(self.device)
@@ -137,27 +125,25 @@ class ExperimentRunnerTriplet(ExperimentRunnerBase):
         triplet_loss = triplet_loss.mean()
 
         # Define the joint loss
-        #print('calc joint loss...')
         loss = audio_ce + \
                (self.weight_text * text_ce) + \
                (self.weight_embedding * triplet_loss)
 
+        # Accuracy of acoustic branch
         predicted = torch.argmax(output['audio_logits'], dim=1)
         correct = (predicted == batch['label'])
         accuracy = float(torch.sum(correct)) / predicted.shape[0]
         
-        #Add combined system
-        #print('system combination...')
+        # Accuracy of text branch
+        text_predicted = torch.argmax(output['text_logits'], dim=1)
+        text_correct = (text_predicted == batch['label'])
+        text_accuracy = float(torch.sum(text_correct)) / text_predicted.shape[0]
+
+        # System Combination: combine output from acoustic and text branch
         combined_logits = (output['audio_logits']+output['text_logits'])/2
         combined_predicted = torch.argmax(combined_logits, dim=1)
         combined_correct = (combined_predicted == batch['label'])
         combined_accuracy = float(torch.sum(combined_correct)) / combined_predicted.shape[0]
-
-        # Accuracy of text branch
-        #print('calc text branch acc...')
-        text_predicted = torch.argmax(output['text_logits'], dim=1)
-        text_correct = (text_predicted == batch['label'])
-        text_accuracy = float(torch.sum(text_correct)) / text_predicted.shape[0]
 
         return {'loss': loss,
                 'accuracy': accuracy,

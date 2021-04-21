@@ -89,8 +89,6 @@ def read_config(config_file):
 	#[training]
 	config.slu_path=parser.get("training", "slu_path")
 	config.unfreezing_type=int(parser.get("training", "unfreezing_type"))
-	#### Edit by Sue (11/08/2020): Comment out the code reading in the training_lr ####
-	# config.training_lr=float(parser.get("training", "training_lr"))
 	config.training_batch_size=int(parser.get("training", "training_batch_size"))
 	config.training_num_epochs=int(parser.get("training", "training_num_epochs"))
 	config.real_dataset_subset_percentage=float(parser.get("training", "real_dataset_subset_percentage"))
@@ -143,7 +141,6 @@ def get_SLU_datasets(config):
 		real_train_df = pd.read_csv(os.path.join(base_path, "data", "train_data.csv"))
 		if "\"Unnamed: 0\"" in list(real_train_df): real_train_df = real_train_df.drop(columns="Unnamed: 0")
 	else:
-		##################### Wendy - rearrange folder hierarchy
 		synthetic_train_df = pd.read_csv(os.path.join(base_path, "synthetic_data_seq2seq.csv"))
 		real_train_df = pd.read_csv(os.path.join(base_path, "train_data_seq2seq.csv"))
 		if "\"Unnamed: 0\"" in list(real_train_df): real_train_df = real_train_df.drop(columns="Unnamed: 0")
@@ -175,18 +172,15 @@ def get_SLU_datasets(config):
 	if config.real_dataset_subset_percentage < 1:
 		subset_size = round(config.real_dataset_subset_percentage * len(real_train_df))
 		real_train_df = real_train_df.loc[np.random.choice(len(real_train_df), subset_size, replace=False)]
-		#real_train_df = real_train_df.set_index(np.arange(len(real_train_df)))
 	if config.synthetic_dataset_subset_percentage < 1:
 		subset_size = round(config.synthetic_dataset_subset_percentage * len(synthetic_train_df))
 		synthetic_train_df = synthetic_train_df.loc[np.random.choice(len(synthetic_train_df), subset_size, replace=False)]
-		#synthetic_train_df = synthetic_train_df.set_index(np.arange(len(synthetic_train_df)))
 
 	train_df = pd.concat([synthetic_train_df, real_train_df]).reset_index()
 	if not config.seq2seq:
 		valid_df = pd.read_csv(os.path.join(base_path, "data", "valid_data.csv"))
 		test_df = pd.read_csv(os.path.join(base_path, "data", "test_data.csv"))
 	else:
-		##################### Wendy - rearrange folder hierarchy
 		valid_df = pd.read_csv(os.path.join(base_path, "valid_data_seq2seq.csv"))
 		test_df = pd.read_csv(os.path.join(base_path, "test_data_seq2seq.csv"))
 
@@ -267,11 +261,7 @@ class SLUDataset(torch.utils.data.Dataset):
 		return len(self.df) * self.upsample_factor
 
 	def __getitem__(self, idx):
-		#augment = ((idx / len(self.df)) > 1) and self.augment
-		#true_idx = idx
 		idx = idx % len(self.df)
-		##################### Emmy 11/06 - use direct path
-		#wav_path = os.path.join(self.base_path, self.df.loc[idx].path)
 		wav_path = self.df.loc[idx].path
 		effect = torchaudio.sox_effects.SoxEffectsChain()
 		effect.set_input_file(wav_path)

@@ -1,5 +1,3 @@
-# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
-#
 # Licensed under the Apache License, Version 2.0 (the "License").
 # You may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -28,15 +26,8 @@ class BaseDataset(Dataset):
 
     def load_audio(self, idx):
         df_row = self.df.iloc[idx]
-        # filename = os.path.join(self.data_root, df_row['path'])
-        # waveform, sample_rate = torchaudio.load(filename)
-        # fbank_feats = torchaudio.compliance.kaldi.mfcc(waveform, num_ceps=40, num_mel_bins=80)
-        # fbank_feats = fbank_feats.numpy()
 
-        #-----------------------------------------------------------
-        idx = idx % len(self.df) # just leave it just in case
-        # Emmy 11/06 - use direct path
-        # wav_path = os.path.join(self.base_path, self.df.loc[idx].path)
+        idx = idx % len(self.df) 
         wav_path = self.df.loc[idx].path
         
         effect = torchaudio.sox_effects.SoxEffectsChain()
@@ -45,7 +36,7 @@ class BaseDataset(Dataset):
         
         x = wav[0].numpy()
         fbank_feats = x
-        #-------------------------------------------------------------
+
         intent = df_row['intent_label']
         encoding = self.bert_tokenizer.encode_plus(
             df_row['transcription'],
@@ -131,14 +122,11 @@ class BaseSnipsSLUDataset(BaseDataset):
         self.data_root = data_root
         self.df = pd.read_csv(os.path.join(self.data_root, 'data/', '{}_data.csv'.format(split)))
 
-        #-----------------------------------------------------------------------------------------------
-        #borrowed the intent_encoder codes from BaseFluentSpeechDataset to create intent_label column
         if intent_encoder is None:
             intent_encoder = preprocessing.LabelEncoder()
             intent_encoder.fit(self.df['intent'])
         self.intent_encoder = intent_encoder
         self.df['intent_label'] = intent_encoder.transform(self.df['intent'])
-        #-----------------------------------------------------------------------------------------------
 
         self.bert_tokenizer = BertTokenizer.from_pretrained(pretrained_model_name)
 
@@ -150,11 +138,6 @@ class BaseSnipsSLUDataset(BaseDataset):
 
     def labels_list(self):
         return self.intent_encoder.classes_
-        # with open(os.path.join(self.data_root, 'data', 'intents.json'), 'r') as f:
-        #     import json
-        #     intent_label_dict = json.load(f)
-        #     intent_labels = list(intent_label_dict.keys())
-        #     return intent_labels
 
 
 class FluentSpeechDataset(BaseFluentSpeechDataset):
@@ -315,8 +298,6 @@ def default_collate_triplet(inputs):
         'length': (B,) length of each utterance
         'label': (B,) label of each utterance
     '''
-    # ---------------------------------------------
-    # lugosch collatewavsSLU from data.py incorporated
     x = []
 
     for data in inputs:
@@ -331,14 +312,11 @@ def default_collate_triplet(inputs):
 
     x = torch.stack(x)
     padded_feats = x
-    # ---------------------------------------------
-    # feats = [data['feats'] for data in inputs]
     labels = [data['label'] for data in inputs]
     lengths = [data['length'] for data in inputs]
     raw_text = [data['raw_text'] for data in inputs]
     encoded_text = [data['encoded_text'] for data in inputs]
     text_lengths = [data['text_length'] for data in inputs]
-    # padded_feats = rnn.pad_sequence(feats, batch_first=True)
     padded_text = rnn.pad_sequence(encoded_text, batch_first=True)
     labels = torch.tensor(labels, dtype=torch.long)
     lengths = torch.tensor(lengths, dtype=torch.long)
@@ -368,7 +346,6 @@ def get_dataloaders(data_root, batch_size, dataset='fsc', num_workers=0, *args, 
         test_dataset = FluentSpeechDataset(data_root, 'test', train_dataset.intent_encoder, *args, **kwargs)
     elif dataset == 'snips':
         train_dataset = SnipsSLUDataset(data_root, 'train', *args, **kwargs)
-        # add intent_encoder argument for val and test so we can reuse intent_encoder created in train
         val_dataset = SnipsSLUDataset(data_root, 'valid', train_dataset.intent_encoder, *args, **kwargs)
         test_dataset = SnipsSLUDataset(data_root, 'test', train_dataset.intent_encoder, *args, **kwargs)
     else:

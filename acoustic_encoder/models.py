@@ -365,14 +365,9 @@ class PretrainedModel(torch.nn.Module):
 			x = x.cuda()
 
 		out = x.unsqueeze(1) 
-		# out = x
 		for layer in self.phoneme_layers:
-			# print(f"input to the phoneme layer in compute_features(): {out.size()}")
 			out = layer(out)
-		# print(f"Phoneme embedding: {out.size()}")
-
 		for layer in self.word_layers:
-			# print(f"input to the word layer in compute_features(): {out.size()}")
 			out = layer(out)
 
 		return out
@@ -736,7 +731,6 @@ class Model(torch.nn.Module):
 		# seq2seq
 		else:
 			self.SOS = config.Sy_intent.index("<sos>")
-			#self.EOS = config.EOS
 			self.num_labels = len(config.Sy_intent) 
 			self.encoder = Seq2SeqEncoder(out_dim, config.num_intent_encoder_layers, config.intent_encoder_dim)
 			self.decoder = Seq2SeqDecoder(self.num_labels, config.num_intent_decoder_layers, config.intent_encoder_dim, config.intent_decoder_dim, config.intent_decoder_key_dim, config.intent_decoder_value_dim, self.SOS)
@@ -819,8 +813,6 @@ class Model(torch.nn.Module):
 		if self.is_cuda:
 			y_intent = y_intent.cuda()
 		out = self.pretrained_model.compute_features(x)
-                ### Check the word embedding on Jan 10, 2021
-		print(f"Word embedding - output of pretrained_model.compute_features(x): {out.size()}")
 
 		if not self.seq2seq:
 			for layer in self.intent_layers:
@@ -885,24 +877,20 @@ class Model(torch.nn.Module):
 			return intents 
 		else: # seq2seq
 			intents = []
-			#predicted_intent: (beam, batch, U, num_labels)
 			batch_size = predicted_intent.shape[1]
 			for i in range(0, batch_size): 
 				intent = self.one_hot_to_string(predicted_intent[0,i],self.Sy_intent)
 				intents.append(intent)
 			return intents
 
-### New function to print out predicted and true intents 10/15/2020 - edit by Emmy
 	def decode_intents_truth_label(self, y_intent): 
 		if not self.seq2seq:
 			intents = []
 			for label in y_intent:
 				intent = []
-				#labels = []        
 				for idx, slot in enumerate(self.Sy_intent):
 					for value in self.Sy_intent[slot]:
 						if label[idx].item() == self.Sy_intent[slot][value]:
 							intent.append(value)
-							#labels.append(value)                      
 				intents.append(intent)
 			return intents

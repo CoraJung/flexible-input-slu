@@ -1,5 +1,3 @@
-# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
-#
 # Licensed under the Apache License, Version 2.0 (the "License").
 # You may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -17,7 +15,6 @@ import torch
 import numpy as np
 from utils.utils import AverageMeter
 from tqdm import tqdm
-# from utils.visualize import plot_confusion_matrix
 from sklearn.metrics import confusion_matrix
 
 
@@ -36,10 +33,6 @@ class ExperimentRunnerBase:
                                                                  steps_per_epoch=len(self.train_loader),
                                                                  epochs=args.num_epochs)
         self.criterion = torch.nn.CrossEntropyLoss()
-        self.visualize = args.visualize
-        if self.visualize:
-            from torch.utils.tensorboard import SummaryWriter
-            self.writer = SummaryWriter()
 
         # Training specific params
         self.args = args
@@ -95,9 +88,6 @@ class ExperimentRunnerBase:
                 if step % self.val_every == 0:
                     val_loss, val_acc, text_val_acc = self.val()
                     print('Val acc (audio) = {:.4f}, Val acc (text) = {:.4f}, Val loss = {:.4f}'.format(val_acc, text_val_acc, val_loss))
-                    if self.visualize:
-                        self.writer.add_scalar('Val/loss', val_loss, step)
-                        self.writer.add_scalar('Val/acc', val_acc, step)
 
                     # Update the save the best validation checkpoint if needed
                     
@@ -113,11 +103,6 @@ class ExperimentRunnerBase:
                     if self.args.scheduler == 'plateau':
                         self.scheduler.step(audio_text_avg_acc)
 
-                if self.visualize:
-                    # Log data to
-                    self.writer.add_scalar('Train/loss', train_loss.item(), step)
-                    self.writer.add_scalar('Train/acc', train_acc, step)
-        
             self.model.unfreeze_one_layer()
 
     def compute_loss(self, batch):

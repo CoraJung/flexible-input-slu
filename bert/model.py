@@ -33,7 +33,6 @@ class BertNLU(nn.Module):
             args.dataset = "snips"
 
         self.classifier = nn.Sequential(
-            # nn.Dropout(0.3),
             nn.Linear(self.bert.config.hidden_size, num_classes)
         )
 
@@ -98,7 +97,6 @@ class ExperimentRunner:
         self.criterion = torch.nn.CrossEntropyLoss()
       
         # Training specific params
-      
         self.num_epochs = args.num_epochs
         self.print_every = args.print_every
         self.val_every = args.val_every
@@ -214,7 +212,7 @@ class ExperimentRunner:
 
         for batch_idx, batch in enumerate(tqdm(self.test_loader)):
             # Get the model output and update the meters
-            output = self.compute_loss(batch) #dictionary of metrics
+            output = self.compute_loss(batch) 
             avg_test_acc.update(output['correct'].cpu().numpy())
             avg_test_loss.update([output['loss']])
 

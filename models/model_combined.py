@@ -1,5 +1,3 @@
-# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
-#
 # Licensed under the Apache License, Version 2.0 (the "License").
 # You may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -16,11 +14,8 @@ import torch.nn as nn
 import torch
 import transformers
 from models.layers import SimpleEncoder, SimpleMaxPoolDecoder, SubsampledBiLSTMEncoder, SimpleMaxPoolClassifier, SimpleSeqDecoder, get_bert, MaskedMaxPool, ConvolutionalSubsampledBiLSTMEncoder
+import acoustic_encoder.models
 import os
-
-""" Combined model (Alexa & Lugosch) """
-import lugosch.models
-### Note we need to read config or hard-code depending on what args we are using
 
 class SLUModelBase(nn.Module):
     """Baseclass for SLU models"""
@@ -93,15 +88,12 @@ class BertNLU(nn.Module):
         return logits
 
 class JointModel(nn.Module):
-    """JointModel which combines both modalities"""
-    """Replace Alexa's audio embedding with Lugosch's word embeddings"""
-    
-
+    """JointModel which combines acoustic and text modalities"""    
     def __init__(self,config, input_dim, num_layers, num_classes, encoder_dim=None, bert_pretrained=True, bert_pretrained_model_name='bert-base-cased'):
         super().__init__()
+        ### Text Encoder
         self.bert = get_bert(bert_pretrained, bert_pretrained_model_name)
-        
-        #model 3 is bert trained on GT and ASR
+        # Load weights if BERT is pretrained with GT and/or ASR from target dataset
         if config.bert_dir:
             print(f"loading model3 (bert pretrained on GT and ASR) from {config.bert_dir}")
             chkpt_path = os.path.join(config.bert_dir, 'best_ckpt.pth')
@@ -109,18 +101,13 @@ class JointModel(nn.Module):
             pretrained_dict = torch.load(chkpt_path)           
             pretrained_dict = {k.split(".", 1)[1]: v for k, v in pretrained_dict.items() if k.split(".", 1)[1] in model_dict}            
             self.bert.load_state_dict(pretrained_dict)
-        
-        ### Comment out Alexa's encoder
-
+        ### Acoustic Encoder
         self.aux_embedding = nn.Linear(config.enc_dim, self.bert.config.hidden_size) #bert_hidden_size = 768 enc_dim = 128
-        self.lugosch_model = lugosch.models.PretrainedModel(config)
-
+        self.acoustic_encoder = acoustic_encoder.models.PretrainedModel(config)
         pretrained_model_path = os.path.join(config.libri_folder, "libri_pretraining", "model_state.pth")
-        
-        self.lugosch_model.load_state_dict(torch.load(pretrained_model_path))
+        self.acoustic_encoder.load_state_dict(torch.load(pretrained_model_path))
         self.config = config
-
-        # freeze phoneme and word layers 
+        # Freeze phoneme and word layers 
         self.freeze_all_layers()
         self.unfreezing_index = 1
         self.maxpool = MaskedMaxPool()
@@ -132,27 +119,18 @@ class JointModel(nn.Module):
         outputs = {}
         
         if audio_feats is not None:
-            
-            # print(f"audio feats from JointModel : {audio_feats.size()}")
-            #hiddens, lengths = self.speech_encoder(audio_feats, audio_lengths)
-            hiddens = self.lugosch_model.compute_features(audio_feats) #check input dimension use Lugosch's padded input
-            lengths = audio_lengths
-            # print(f"hidden_size: {hiddens.size()}, lengths: {lengths}") # hidden_size = {32, 24, 256}
-
+            hiddens = self.acoustic_encoder.compute_features(audio_feats) 
             hiddens = self.aux_embedding(hiddens)
-
+            lengths = audio_lengths
             audio_embedding = self.maxpool(hiddens, lengths)
-            # print(f"audio_embedding: {audio_embedding.size()}")
-
             audio_logits = self.classifier(audio_embedding) 
-            # print(f"audio logits: {audio_logits.size()}")
             outputs['audio_embed'], outputs['audio_logits'] = audio_embedding, audio_logits
 
         if input_text is not None:
             batch_size = input_text.shape[0]
             max_seq_len = input_text.shape[1]
             attn_mask = torch.arange(max_seq_len, device=text_lengths.device)[None,:] < text_lengths[:,None]
-            attn_mask = attn_mask.long() # Convert to 0-1
+            attn_mask = attn_mask.long() 
             _, text_embedding = self.bert(input_ids=input_text, attention_mask=attn_mask)
             text_logits = self.classifier(text_embedding)
             outputs['text_embed'], outputs['text_logits'] = text_embedding, text_logits
@@ -163,29 +141,25 @@ class JointModel(nn.Module):
         outputs = {}
         batch_size = input_text.shape[0]
         max_seq_len = input_text.shape[1]
-        # print(f"batch_size: {batch_size}, max_seq_len: {max_seq_len}")
-
         attn_mask = torch.arange(max_seq_len, device=text_lengths.device)[None,:] < text_lengths[:,None]
-        attn_mask = attn_mask.long() # Convert to 0-1
+        attn_mask = attn_mask.long() 
         _, text_embedding = self.bert(input_ids=input_text, attention_mask=attn_mask)
         text_logits = self.classifier(text_embedding)
-        # print(f"text_embedding: {text_embedding.size()}, text_logits: {text_logits.size()}")
         outputs['text_embed'], outputs['text_logits'] = text_embedding, text_logits
         return outputs 
 
-    # functions below are adopted from lugosch models.py
     def freeze_all_layers(self):
-        for layer in self.lugosch_model.phoneme_layers:
+        for layer in self.acoustic_encoder.phoneme_layers:
             freeze_layer(layer)
-        for layer in self.lugosch_model.word_layers:
+        for layer in self.acoustic_encoder.word_layers:
             freeze_layer(layer)
     
     def print_frozen(self):
-        for layer in self.lugosch_model.phoneme_layers:
+        for layer in self.acoustic_encoder.phoneme_layers:
             if has_params(layer):
                 frozen = "frozen" if is_frozen(layer) else "unfrozen"
                 print(layer.name + ": " + frozen)
-        for layer in self.lugosch_model.word_layers:
+        for layer in self.acoustic_encoder.word_layers:
             if has_params(layer):
                 frozen = "frozen" if is_frozen(layer) else "unfrozen"
                 print(layer.name + ": " + frozen)
@@ -195,19 +169,14 @@ class JointModel(nn.Module):
         ULMFiT-style unfreezing:
             Unfreeze the next trainable layer
         """
-        # no unfreezing
-        print("self.config.unfreezing_type: ", self.config.unfreezing_type)
-        
         if self.config.unfreezing_type == 0:
             return
 
         if self.config.unfreezing_type == 1:
             trainable_index = 0 # which trainable layer
             global_index = 1 # which layer overall
-            print("Len of self.lugosch_model.word_layers:", len(self.lugosch_model.word_layers))
-            while global_index <= len(self.lugosch_model.word_layers):
-                layer = self.lugosch_model.word_layers[-global_index]
-                print("lugosch_model.word_layers[-global_index]:", layer)
+            while global_index <= len(self.acoustic_encoder.word_layers):
+                layer = self.acoustic_encoder.word_layers[-global_index]
                 unfreeze_layer(layer)
                 if has_params(layer): trainable_index += 1
                 global_index += 1
@@ -218,8 +187,8 @@ class JointModel(nn.Module):
         if self.config.unfreezing_type == 2:
             trainable_index = 0 # which trainable layer
             global_index = 1 # which layer overall
-            while global_index <= len(self.lugosch_model.word_layers):
-                layer = self.lugosch_model.word_layers[-global_index]
+            while global_index <= len(self.acoustic_encoder.word_layers):
+                layer = self.acoustic_encoder.word_layers[-global_index]
                 unfreeze_layer(layer)
                 if has_params(layer): trainable_index += 1
                 global_index += 1
@@ -228,8 +197,8 @@ class JointModel(nn.Module):
                     return
 
             global_index = 1
-            while global_index <= len(self.lugosch_model.phoneme_layers):
-                layer = self.lugosch_model.phoneme_layers[-global_index]
+            while global_index <= len(self.acoustic_encoder.phoneme_layers):
+                layer = self.acoustic_encoder.phoneme_layers[-global_index]
                 unfreeze_layer(layer)
                 if has_params(layer): trainable_index += 1
                 global_index += 1
@@ -237,7 +206,6 @@ class JointModel(nn.Module):
                     self.unfreezing_index += 1
                     return
 
-# codes from lugosch models.py
 def freeze_layer(layer):
     for param in layer.parameters():
         param.requires_grad = False

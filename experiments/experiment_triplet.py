@@ -1,5 +1,3 @@
-# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
-#
 # Licensed under the Apache License, Version 2.0 (the "License").
 # You may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -77,13 +75,13 @@ class ExperimentRunnerTriplet(ExperimentRunnerBase):
             print('Finetuning BERT')
             self.optimizer = torch.optim.Adam([
                 {'params': self.model.bert.parameters(), 'lr':args.learning_rate_bert}, 
-                {'params': self.model.lugosch_model.parameters()},
+                {'params': self.model.acoustic_encoder.parameters()},
                 {'params': self.model.classifier.parameters()}
             ], lr=args.learning_rate)
         else: 
             print('Freezing BERT')
             self.optimizer = torch.optim.Adam([ 
-                {'params': self.model.lugosch_model.parameters()},
+                {'params': self.model.acoustic_encoder.parameters()},
                 {'params': self.model.classifier.parameters()}
             ], lr=args.learning_rate)
         

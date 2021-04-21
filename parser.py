@@ -1,5 +1,3 @@
-# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
-#
 # Licensed under the Apache License, Version 2.0 (the "License").
 # You may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -28,10 +26,6 @@ def parse():
                         default='fsc',
                         help="The dataset to use")
     
-    # parser.add_argument("--num-classes",
-    #                     type=int,
-    #                     help="Number of classes that a dataset predicts")
-
     parser.add_argument("--data-path",
                         type=str,
                         help="Path to the data folder containing data csvs")
@@ -79,10 +73,6 @@ def parse():
                         action='store_true',
                         help="Only run inference on the saved model")
 
-    parser.add_argument("--visualize",
-                        action='store_true',
-                        help="User tensorboard for visualizing training curves")
-
     parser.add_argument("--distributed",
                         action='store_true',
                         help="Use multiple GPUs for training")
@@ -126,7 +116,7 @@ def parse():
                         help="Number of encoder LSTM layers")
 
     parser.add_argument("--enc-dim",
-                        default=256,#original 512
+                        default=256,
                         type=int,
                         help="Hidden dimension of encoder LSTM")
 
@@ -160,7 +150,7 @@ def parse():
                         type=str,
                         help="Checkpoint path to be used for testing.")
 
-    ### Lugosch's Pretrained Model Parser ###
+    ### Acoustic Encoder Parser ###
     parser.add_argument("--use-sincnet",
                         default=True)
 
@@ -240,21 +230,24 @@ def parse():
                         default=2,
                         help="0: No Unfreezing (freeze all), 1: Unfreeze Word, 2: Unfreeze All")
 
-    ### Lugosch's IntentModule Parser ###
     parser.add_argument("--intent-rnn-num-hidden",
                         default=[128],
                         nargs="+")
+
     parser.add_argument("--intent-downsample-len",
                         default=[1],
                         nargs="+")
+
     parser.add_argument("--intent-downsample-type",
                         default=["none"],
                         nargs="+")
+
     parser.add_argument("--intent-rnn-drop",
                         default=[0.5],
                         nargs="+")
+                        
     parser.add_argument("--intent-rnn-bidirectional",
-                        action="store_false") #True
+                        action="store_false") 
     
     ### ASR Parser ###
     parser.add_argument("-lr-bert-asr", "--learning-rate-bert-asr",
@@ -277,17 +270,16 @@ def parse():
                         type=float,
                         help="Weight of the ASR embedding loss for joint models")
     
-    ### bert Parser ###
+    ### Bert Parser ###
     parser.add_argument("--finetune-bert",
                         action='store_true',
                         help="decides if bert model is finetuned or frozen. default is false")
 
-    ### bert loader Parser ###
     parser.add_argument("--bert-dir",
                         default=None,
                         help="load finetuned bert model")
     
-    ### save criteria ###
+    ### Save criteria ###
     parser.add_argument("--model-save-criteria",
                         choices=['combined', 'audio_text'],
                         default='audio_text',
