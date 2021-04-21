@@ -15,7 +15,7 @@ We tested using pytorch 1.5.0 and torchaudio 0.5.0.
 
 The model uses the Snips SLU or the Fluent Speech dataset (FSC) with speech, ground truth and ASR transcripts as training inputs.
 - [Snips SLU](https://arxiv.org/pdf/1810.12735.pdf): 
-To make our results comparable to the original by [Markus et. al.](https://github.com/alexa/alexa-end-to-end-slu), we use the same partition of the data, which was kindly given to us by the author, Markus Mueller.
+To make our results comparable to [Markus et. al.](https://github.com/alexa/alexa-end-to-end-slu), we use the same partition of the data, which was kindly given to us by the author, Markus Mueller.
 - [Fluent Speech Command (FSC)](https://zenodo.org/record/3509828#.YH8fauhKhPZ)
 - ASR Transcripts: 
 As mentioned in the paper, we generate ASR transcripts by passing the audio inputs to an existing ASR model trained on LibriSpeech using the Kaldi Speech Recognition toolkit. We are planning to share the data (.csv) with ASR transcripts in this repo.
