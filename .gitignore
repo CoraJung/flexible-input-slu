@@ -3,6 +3,7 @@
 *.out
 *.sh
 *.csv
+slurp_sh/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

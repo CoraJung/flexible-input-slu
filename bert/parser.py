@@ -24,7 +24,7 @@ def parse():
                         help="Seed for the RNG")
 
     parser.add_argument("--dataset",
-                        choices=['fsc', 'snips'],
+                        choices=['fsc', 'snips', 'slurp'],
                         default='fsc',
                         help="The dataset to use")
     
