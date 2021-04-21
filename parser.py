@@ -31,7 +31,7 @@ def parse():
                         help="Path to the data folder containing data csvs")
 
     parser.add_argument("--experiment",
-                        default="experiments.experiment_triplet.ExperimentRunnerTriplet",
+                        default="experiments.experiment_triplet_combinedsystem.ExperimentRunnerTriplet",
                         help="Experiment to run")
 
     parser.add_argument("-lr", "--learning-rate",
