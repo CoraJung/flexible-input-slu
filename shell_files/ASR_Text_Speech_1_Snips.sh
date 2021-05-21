@@ -19,9 +19,9 @@ module purge
 # Activate the conda environment
 module load anaconda3
 source activate alexa_env
-DATA_PATH=//misc/vlgscratch5/PichenyGroup/s2i-common/alexa-slu/snips_slu/data
+DATA_PATH={YOUR_PATH}/snips_slu/data
 DATASET=snips
-MODEL_DIR=/misc/vlgscratch5/PichenyGroup/s2i-common/alexa-slu/best_chkpt/snips/np_bert
+MODEL_DIR={YOUR_PATH}/best_chkpt/snips/np_bert
 EXPERIMENT=experiments.experiment_triplet_combinedsystem.ExperimentRunnerTriplet
 
 # Execute the script
