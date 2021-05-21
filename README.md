@@ -2,7 +2,7 @@
 
 ## ASR-Text-Speech End-to-End SLU Model
 
-[Papersubmitted to Interspeech 2021.](https://arxiv.org/abs/2104.05752) 
+[Paper submitted to Interspeech 2021.](https://arxiv.org/abs/2104.05752) 
 
 The baseline code is adopted from [Alexa End-to-End SLU System](https://github.com/alexa/alexa-end-to-end-slu). 
 The original setup is a cross-modal system that co-trains text embeddings and acoustic embeddings in a shared latent space.
