@@ -6,8 +6,8 @@
 #SBATCH --mem-per-cpu=10GB
 #SBATCH --job-name=snips_text
 #SBATCH --mail-type=END
-#SBATCH --mail-user=sjc433@nyu.edu
-#SBATCH --output=delete_errorMessage_%j.out
+#SBATCH --mail-user=
+#SBATCH --output=TS_Snips_%j.out
 #SBATCH --gres=gpu:v100:1
   
 # Refer to https://sites.google.com/a/nyu.edu/nyu-hpc/documentation/prince/batch/submitting-jobs-with-sbatch
