@@ -24,16 +24,10 @@ DATA_PATH=//misc/vlgscratch5/PichenyGroup/s2i-common/alexa-slu/snips_slu/
 MODEL_DIR=//misc/vlgscratch5/PichenyGroup/s2i-common/alexa-slu/best_chkpt/snips
 
 # Execute the script
-echo "Model 1 - Not Finetuning BERT - our config"
-python train.py --dataset=$DATASET --data-path=$DATA_PATH --model-dir=$MODEL_DIR/bert_frozen_ours > snipsBERT_frozen_ours.out
 
-echo "Model 2 - Finetuning BERT - our config"
+echo "Finetuning BERT - our config"
 python train.py --dataset=$DATASET --data-path=$DATA_PATH --model-dir=$MODEL_DIR/bert_finetune_ours --finetune-bert > snipsBERT_finetune_ours.out
 
-echo "Model 1 - Not Finetuning BERT - our config - inference on ASR"
-python train.py --dataset=$DATASET --data-path=$DATA_PATH \
---model-dir=$MODEL_DIR/bert_frozen_ours --infer-only > snipsBERT_frozen_ours_infer_asr.out
-
-echo "Model 2 - Finetuning BERT - our config - inference on ASR"
+echo "Finetuning BERT - our config - inference on ASR"
 python train.py --dataset=$DATASET --data-path=$DATA_PATH \
 --model-dir=$MODEL_DIR/bert_finetune_ours --finetune-bert --infer-only > snipsBERT_finetune_ours_infer_asr.out
