@@ -20,8 +20,8 @@ module purge
 module load anaconda3
 source activate alexa_env
 DATASET=snips
-DATA_PATH=//misc/vlgscratch5/PichenyGroup/s2i-common/alexa-slu/snips_slu/data
-MODEL_DIR=//misc/vlgscratch5/PichenyGroup/s2i-common/alexa-slu/best_chkpt/snips
+DATA_PATH={YOUR_PATH}/snips_slu/data
+MODEL_DIR={YOUR_PATH}/best_chkpt/snips
 
 # Execute the script
 echo "Model 3.1 - Finetuning BERT - Train on both Raw+ASR - Our config - Test on ASR"
