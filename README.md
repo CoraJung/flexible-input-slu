@@ -57,7 +57,7 @@ Below is the instruction to replicate our experiments  Snips SLU or Fluent Speec
 
 ### ASR-Text Model (e.g. inputs: Snips SLU - ASR+GT train data, ASR test data)
 
->>> Refer to `shell_files/ASR_Text_Snips.sh`
+> Refer to `shell_files/ASR_Text_Snips.sh`
 
 Expected results on ASR test set: 
 Output file: ASR_Text_Snips_testasr.out
@@ -69,7 +69,7 @@ Output file name: ASR_Text_Snips_testraw.out
 
 ### Text-Speech Model (e.g. inputs: Snips SLU - GT+Speech train data, ASR+Speech test data)
 
->>> Refer to `shell_files/Text_Speech_Snips.sh`
+> Refer to `shell_files/Text_Speech_Snips.sh`
 
 Expected results on ASR+Speech test set and with Combined System:
 Output file: $MODEL_DIR/np_bert/gt_ours/ua/asr_combinedsys.out
@@ -82,7 +82,7 @@ Output file: $MODEL_DIR/np_bert/gt_ours/ua/gt_combinedsys.out (combined sys resu
 
 ### ASR-Text-Speech-1 Model (e.g. inputs: Snips SLU - ASR+GT+Speech train data, ASR+Speech test data)
 
->>> Refer to `shell_files/ASR_Text_Speech_1_Snips.sh`
+> Refer to `shell_files/ASR_Text_Speech_1_Snips.sh`
 
 Expected results on ASR+Speech test set and with Combined System: 
 Output file: $MODEL_DIR/gtasr_ours/uw/asr_combinedsys.out
@@ -97,7 +97,7 @@ In this example above and in our paper, our test input for ‘combined system’
 
 ### ASR-Text-Speech-2 Model (e.g. inputs: Snips SLU - ASR+GT+Speech train data, ASR+Speech test data)
 
->>> Refer to `shell_files/ASR_Text_Speech_2_Snips.sh`
+> Refer to `shell_files/ASR_Text_Speech_2_Snips.sh`
 
 Expected results on ASR+Speech test set and with Combined System: 
 Output file: $FROZEN_MODEL_DIR/gt_ours/ua/asr_combinedsys.out
