@@ -32,8 +32,8 @@ e.g. `python download_bert.py bert-base-cased ./models/bert-base-cased`.
 ## Running experiments
 
 ### Important Notes:
-For the exemplary shell files, we use SLURM workload manager. Make sure to edit the shell files corresponding to the system you use.
-This version of the code uses direct paths to access the audio data files (i.e. //yourpath/data.wav), you should edit the `path` column in the data.csv accordingly.
+- For the exemplary shell files, we use SLURM workload manager. Make sure to edit the shell files corresponding to the system you use.
+- This version of the code uses direct paths to access the audio data files (i.e. //yourpath/data.wav), you should edit the `path` column in the data.csv accordingly.
 
 ### Key Arguments
 To customize the experiments, several command line options are available (for a full list, please refer to `parser.py`):
