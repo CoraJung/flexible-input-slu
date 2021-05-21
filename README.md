@@ -55,13 +55,25 @@ To customize the experiments, several command line options are available (for a 
 Below is the instruction to replicate our experiments  Snips SLU or Fluent Speech Commands should produce the following results:
 (GT: ground truth transcripts, ASR: automatic speech recognition transcripts)
 
-### ASR-Text Model (e.g. inputs: Snips SLU - ASR+GT train data, ASR test data)
+### Text-Only Model (e.g. inputs: Snips SLU - GT train data, GT/ASR test data)
+
+> Refer to `shell_files/Text_Only_Snips.sh`
+
+Expected results on ASR test set: <br>
+Output file: snipsBERT_finetune_ours_infer_asr.out <br>
+`Final test acc = 0.7711` (Table 3, Row 1, ASR in the paper)
+
+Expected results on GT test set:  <br>
+Output file name: snipsBERT_finetune_ours.out <br>
+`Final test acc = 0.9518` (Table 3, Row 1, GT)
+
+### ASR-Text Model (e.g. inputs: Snips SLU - ASR+GT train data, GT/ASR test data)
 
 > Refer to `shell_files/ASR_Text_Snips.sh`
 
 Expected results on ASR test set: <br>
 Output file: ASR_Text_Snips_testasr.out <br>
-`Final test acc = 0.7892` (Table 3, Row 2, ASR in the paper)
+`Final test acc = 0.7892` (Table 3, Row 2, ASR)
 
 Expected results on GT test set:  <br>
 Output file name: ASR_Text_Snips_testraw.out <br>
