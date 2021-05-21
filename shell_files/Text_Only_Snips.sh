@@ -29,3 +29,11 @@ python train.py --dataset=$DATASET --data-path=$DATA_PATH --model-dir=$MODEL_DIR
 
 echo "Model 2 - Finetuning BERT - our config"
 python train.py --dataset=$DATASET --data-path=$DATA_PATH --model-dir=$MODEL_DIR/bert_finetune_ours --finetune-bert > snipsBERT_finetune_ours.out
+
+echo "Model 1 - Not Finetuning BERT - our config - inference on ASR"
+python train.py --dataset=$DATASET --data-path=$DATA_PATH \
+--model-dir=$MODEL_DIR/bert_frozen_ours --infer-only > snipsBERT_frozen_ours_infer_asr.out
+
+echo "Model 2 - Finetuning BERT - our config - inference on ASR"
+python train.py --dataset=$DATASET --data-path=$DATA_PATH \
+--model-dir=$MODEL_DIR/bert_finetune_ours --finetune-bert --infer-only > snipsBERT_finetune_ours_infer_asr.out
