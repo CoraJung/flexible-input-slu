@@ -59,7 +59,7 @@ Below is the instruction to replicate our experiments  Snips SLU or Fluent Speec
 
 > Refer to `shell_files/ASR_Text_Snips.sh`
 
-Expected results on ASR test set: 
+Expected results on ASR test set: <br>
 Output file: ASR_Text_Snips_testasr.out
 `Final test acc = 0.7892` (Table 3, Row 2, ASR in the paper)
 
