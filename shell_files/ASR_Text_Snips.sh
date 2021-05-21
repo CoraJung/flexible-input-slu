@@ -26,8 +26,8 @@ MODEL_DIR=//misc/vlgscratch5/PichenyGroup/s2i-common/alexa-slu/best_chkpt/snips
 # Execute the script
 echo "Model 3.1 - Finetuning BERT - Train on both Raw+ASR - Our config - Test on ASR"
 python train.py --dataset=$DATASET --data-path=$DATA_PATH/gtasr_asr \
---model-dir=$MODEL_DIR/bert_trainboth_testasr --finetune-bert > snipsBERT_trainboth_testasr.out
+--model-dir=$MODEL_DIR/bert_trainboth_testasr --finetune-bert > ASR_Text_Snips_testasr.out
 
 echo "Model 3.2 - Finetuning BERT - Train on both Raw+ASR - Our config - Test on RAW"
 python train.py --dataset=$DATASET --data-path=$DATA_PATH/gtasr_gt \
---model-dir=$MODEL_DIR/bert_trainboth_testraw --finetune-bert --infer-only > snipsBERT_trainboth_testraw.out
+--model-dir=$MODEL_DIR/bert_trainboth_testraw --finetune-bert --infer-only > ASR_Text_Snips_testraw.out
