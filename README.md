@@ -15,7 +15,7 @@ We tested using pytorch 1.5.0 and torchaudio 0.5.0.
 
 The model uses the Snips SLU or the Fluent Speech dataset (FSC) with speech, ground truth and ASR transcripts as training inputs.
 - [Snips SLU](https://arxiv.org/pdf/1810.12735.pdf): 
-To make our results comparable to [Markus et. al.](https://github.com/alexa/alexa-end-to-end-slu), we use the same partition of the data, which was kindly given to us by the author, Markus Mueller.
+To make our results comparable to the original by [Markus et. al.](https://github.com/alexa/alexa-end-to-end-slu), we use the same partition of the data, which was kindly given to us by the author, Markus Mueller.
 - [Fluent Speech Command (FSC)](https://zenodo.org/record/3509828#.YH8fauhKhPZ)
 - ASR Transcripts: 
 As mentioned in the paper, we generate ASR transcripts by passing the audio inputs to an existing ASR model trained on LibriSpeech using the Kaldi Speech Recognition toolkit. We are planning to share the data (.csv) with ASR transcripts in this repo.
@@ -28,13 +28,14 @@ Typically, the model will be downloaded (and cached) automatically when running 
 In case you want to download the model explicitly, you can run the `download_bert.py` script from the `dataprep/` directory,
 e.g. `python download_bert.py bert-base-cased ./models/bert-base-cased`. 
 
+
 ## Running experiments
 
-Core to running experiments is the `train.py` script.
-When called without any parameters, it will train a model using triplet loss on the FSC dataset.
-The default location for saving intermediate results is the pre-specified `--model-dir` directory.
-In case it does not yet exist, it will be created.
+### Important Notes:
+For the exemplary shell files, we use SLURM workload manager. Make sure to edit the shell files corresponding to the system you use.
+This version of the code uses direct paths to access the audio data files (i.e. //yourpath/data.wav), you should edit the `path` column in the data.csv accordingly.
 
+### Key Arguments
 To customize the experiments, several command line options are available (for a full list, please refer to `parser.py`):
 
 * --dataset (The dataset to use, e.g. `fsc`)
@@ -51,49 +52,62 @@ To customize the experiments, several command line options are available (for a 
 
 ## Example runs
 
-Training these following models with either Snips SLU or Fluent Speech Commands should produce the following results:
+Below is the instruction to replicate our experiments  Snips SLU or Fluent Speech Commands should produce the following results:
 (GT: ground truth transcripts, ASR: automatic speech recognition transcripts)
-
 
 ### ASR-Text Model (e.g. inputs: Snips SLU - ASR+GT train data, ASR test data)
 
-`python bert/train.py --dataset=snips --data-path=<path to input data> --finetune-bert` 
+>>> Refer to `shell_files/ASR_Text_Snips.sh`
 
-Final test acc = 0.7892 (Table 3 in the paper)
+Expected results on ASR test set: 
+Output file: ASR_Text_Snips_testasr.out
+`Final test acc = 0.7892` (Table 3, Row 2, ASR in the paper)
 
-To evaluate the trained model on a different test set (e.g. GT data), run:
-
-`python bert/train.py --dataset=snips --data-path=<path to input data> --infer-only`
-
-Final test acc = 1.0000 (Table 3)
-
+Expected results on GT test set: 
+Output file name: ASR_Text_Snips_testraw.out
+`Final test acc = 0.9578` (Table 3, Row 2, GT)
 
 ### Text-Speech Model (e.g. inputs: Snips SLU - GT+Speech train data, ASR+Speech test data)
 
-`python train.py --dataset=snips --data-path=<path to input data> --finetune-bert --unfreezing-type=2`
+>>> Refer to `shell_files/Text_Speech_Snips.sh`
 
-Final test acc (audio) = 0.7590, final test acc (text) = 0.7831 (Table 1)
+Expected results on ASR+Speech test set and with Combined System:
+Output file: $MODEL_DIR/np_bert/gt_ours/ua/asr_combinedsys.out
+`Final test acc (audio) = 0.7590, final test acc (text) = 0.7831, final test acc (combined system) = 0.8795` (Table 1, Row 3, Audio/ASR/Combined)
 
-Similarly, add the `--infer-only` argument to perform inference-only on a different test set.
+Expected results on GT+Speech test set:
+Output file: $MODEL_DIR/np_bert/gt_ours/ua/gt_combinedsys.out (combined sys result in this output file not reported in paper)
+`Final test acc (audio) = 0.7590, final test acc (text) = 0.9819` (Table 1, Row 3, Audio/GT)
 
 
 ### ASR-Text-Speech-1 Model (e.g. inputs: Snips SLU - ASR+GT+Speech train data, ASR+Speech test data)
 
-`python train.py --dataset=snips --data-path=<path to input data> --finetune-bert --unfreezing-type=1`
+>>> Refer to `shell_files/ASR_Text_Speech_1_Snips.sh`
 
-Final test acc (audio) = 0.7831, final test acc (text) = 0.8373, final test acc (combined system) = 0.8976 (Table 1)
+Expected results on ASR+Speech test set and with Combined System: 
+Output file: $MODEL_DIR/gtasr_ours/uw/asr_combinedsys.out
+`Final test acc (audio) = 0.7831, final test acc (text) = 0.8373, final test acc (combined system) = 0.8976` (Table 1, Row 4, Audio/ASR/Combined)
+
+Expected results on GT+Speech test set:
+Output file: $MODEL_DIR/gtasr_ours/uw/gt_combinedsys.out (combined sys result in this output file not reported in paper)
+`Final test acc (audio) = 0.7831, final test acc (text) = 0.9759` (Table 1, Row 4, Audio/GT)
 
 (*Note that this 'text' and 'combined system' test accuracy depends on your test input for the text branch (e.g. GT, ASR or GT+ASR). 
-In this example above our test input for the text branch is ASR, thus the 'text' here refers to ASR and 'combined system' refers to ASR-Speech.*)
-
+In this example above and in our paper, our test input for ‘combined system’ is ASR and speech, thus the 'text' here refers to ASR and 'combined system' refers to ASR-Speech.*)
 
 ### ASR-Text-Speech-2 Model (e.g. inputs: Snips SLU - ASR+GT+Speech train data, ASR+Speech test data)
 
-`python train.py --dataset=snips --data-path=<path to input data> --bert-dir=<path to pre-trained BERT model> --unfreezing-type=2`
+>>> Refer to `shell_files/ASR_Text_Speech_2_Snips.sh`
 
-Final test acc (audio) = 0.8012, final test acc (text) = 0.8072, final test acc (combined system) = 0.8675 (Table 1)
+Expected results on ASR+Speech test set and with Combined System: 
+Output file: $FROZEN_MODEL_DIR/gt_ours/ua/asr_combinedsys.out
+`Final test acc (audio) = 0.8012, final test acc (text) = 0.8072, final test acc (combined system) = 0.8675` (Table 1, Row 5, Audio/ASR/Combined)
 
-(*Note that $BERT_DIR is the directory that contains the best checkpoint of the ASR-Text model trained on Snips SLU in this example.*)
+Expected results on GT+Speech test set:
+Output file: $FROZEN_MODEL_DIR/gt_ours/ua/gt_combinedsys.out (combined sys result in this output file not reported in paper)
+`Final test acc (audio) = 0.8012, final test acc (text) = 0.9759` (Table 1, Row 5, Audio/GT)
+
+(*Note that $BERT_DIR in the shell files is the directory that contains the best checkpoint of the ASR-Text model trained on Snips SLU in this example.*)
 
 ## Citation
 If you find this repo useful, please cite our papers:
