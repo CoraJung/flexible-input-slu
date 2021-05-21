@@ -57,13 +57,13 @@ Training these following models with either Snips SLU or Fluent Speech Commands 
 
 ### ASR-Text Model (e.g. inputs: Snips SLU - ASR+GT train data, ASR test data)
 
-`python train.py --dataset=snips --data-path=<path to input data> --finetune-bert` 
+`python bert/train.py --dataset=snips --data-path=<path to input data> --finetune-bert` 
 
 Final test acc = 0.7892 (Table 3 in the paper)
 
 To evaluate the trained model on a different test set (e.g. GT data), run:
 
-`python train.py --dataset=snips --data-path=<path to input data> --infer-only`
+`python bert/train.py --dataset=snips --data-path=<path to input data> --infer-only`
 
 Final test acc = 1.0000 (Table 3)
 
