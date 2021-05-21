@@ -60,23 +60,23 @@ Below is the instruction to replicate our experiments  Snips SLU or Fluent Speec
 > Refer to `shell_files/ASR_Text_Snips.sh`
 
 Expected results on ASR test set: <br>
-Output file: ASR_Text_Snips_testasr.out
+Output file: ASR_Text_Snips_testasr.out <br>
 `Final test acc = 0.7892` (Table 3, Row 2, ASR in the paper)
 
-Expected results on GT test set: 
-Output file name: ASR_Text_Snips_testraw.out
+Expected results on GT test set:  <br>
+Output file name: ASR_Text_Snips_testraw.out <br>
 `Final test acc = 0.9578` (Table 3, Row 2, GT)
 
 ### Text-Speech Model (e.g. inputs: Snips SLU - GT+Speech train data, ASR+Speech test data)
 
 > Refer to `shell_files/Text_Speech_Snips.sh`
 
-Expected results on ASR+Speech test set and with Combined System:
-Output file: $MODEL_DIR/np_bert/gt_ours/ua/asr_combinedsys.out
+Expected results on ASR+Speech test set and with Combined System: <br>
+Output file: $MODEL_DIR/np_bert/gt_ours/ua/asr_combinedsys.out <br>
 `Final test acc (audio) = 0.7590, final test acc (text) = 0.7831, final test acc (combined system) = 0.8795` (Table 1, Row 3, Audio/ASR/Combined)
 
-Expected results on GT+Speech test set:
-Output file: $MODEL_DIR/np_bert/gt_ours/ua/gt_combinedsys.out (combined sys result in this output file not reported in paper)
+Expected results on GT+Speech test set: <br>
+Output file: $MODEL_DIR/np_bert/gt_ours/ua/gt_combinedsys.out (combined sys result in this output file not reported in paper) <br>
 `Final test acc (audio) = 0.7590, final test acc (text) = 0.9819` (Table 1, Row 3, Audio/GT)
 
 
@@ -84,12 +84,12 @@ Output file: $MODEL_DIR/np_bert/gt_ours/ua/gt_combinedsys.out (combined sys resu
 
 > Refer to `shell_files/ASR_Text_Speech_1_Snips.sh`
 
-Expected results on ASR+Speech test set and with Combined System: 
-Output file: $MODEL_DIR/gtasr_ours/uw/asr_combinedsys.out
+Expected results on ASR+Speech test set and with Combined System:  <br>
+Output file: $MODEL_DIR/gtasr_ours/uw/asr_combinedsys.out <br>
 `Final test acc (audio) = 0.7831, final test acc (text) = 0.8373, final test acc (combined system) = 0.8976` (Table 1, Row 4, Audio/ASR/Combined)
 
-Expected results on GT+Speech test set:
-Output file: $MODEL_DIR/gtasr_ours/uw/gt_combinedsys.out (combined sys result in this output file not reported in paper)
+Expected results on GT+Speech test set: <br>
+Output file: $MODEL_DIR/gtasr_ours/uw/gt_combinedsys.out (combined sys result in this output file not reported in paper) <br>
 `Final test acc (audio) = 0.7831, final test acc (text) = 0.9759` (Table 1, Row 4, Audio/GT)
 
 (*Note that this 'text' and 'combined system' test accuracy depends on your test input for the text branch (e.g. GT, ASR or GT+ASR). 
@@ -99,12 +99,12 @@ In this example above and in our paper, our test input for ‘combined system’
 
 > Refer to `shell_files/ASR_Text_Speech_2_Snips.sh`
 
-Expected results on ASR+Speech test set and with Combined System: 
-Output file: $FROZEN_MODEL_DIR/gt_ours/ua/asr_combinedsys.out
+Expected results on ASR+Speech test set and with Combined System: <br>
+Output file: $FROZEN_MODEL_DIR/gt_ours/ua/asr_combinedsys.out <br>
 `Final test acc (audio) = 0.8012, final test acc (text) = 0.8072, final test acc (combined system) = 0.8675` (Table 1, Row 5, Audio/ASR/Combined)
 
-Expected results on GT+Speech test set:
-Output file: $FROZEN_MODEL_DIR/gt_ours/ua/gt_combinedsys.out (combined sys result in this output file not reported in paper)
+Expected results on GT+Speech test set: <br>
+Output file: $FROZEN_MODEL_DIR/gt_ours/ua/gt_combinedsys.out (combined sys result in this output file not reported in paper) <br>
 `Final test acc (audio) = 0.8012, final test acc (text) = 0.9759` (Table 1, Row 5, Audio/GT)
 
 (*Note that $BERT_DIR in the shell files is the directory that contains the best checkpoint of the ASR-Text model trained on Snips SLU in this example.*)
