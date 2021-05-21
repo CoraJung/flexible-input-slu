@@ -19,11 +19,10 @@ module purge
 # Activate the conda environment
 module load anaconda3
 source activate alexa_env
-DATA_PATH=//misc/vlgscratch5/PichenyGroup/s2i-common/alexa-slu/snips_slu/data
+DATA_PATH={YOUR_PATH}/snips_slu/data
 DATASET=snips
-BERT_DIR=/misc/vlgscratch5/PichenyGroup/s2i-common/alexa-slu/best_chkpt/snips/bert_trainboth_ours
-FROZEN_MODEL_DIR=/misc/vlgscratch5/PichenyGroup/s2i-common/alexa-slu/best_chkpt/snips/pretrain_bert/bert_frozen
-FINETUNE_MODEL_DIR=/misc/vlgscratch5/PichenyGroup/s2i-common/alexa-slu/best_chkpt/snips/pretrain_bert/bert_finetuned
+BERT_DIR={YOUR_PATH}/best_chkpt/snips/bert_trainboth_ours
+FROZEN_MODEL_DIR={YOUR_PATH}/best_chkpt/snips/pretrain_bert/bert_frozen
 EXPERIMENT=experiments.experiment_triplet_combinedsystem.ExperimentRunnerTriplet
 # SCHEDULER=cycle
 
