@@ -4,10 +4,10 @@
 #SBATCH --cpus-per-task=5
 #SBATCH --time=2:00:00
 #SBATCH --mem-per-cpu=10GB
-#SBATCH --job-name=snipsBERT_trainboth_ours
+#SBATCH --job-name=ASR_Text_Snips
 #SBATCH --mail-type=END
-#SBATCH --mail-user=hj1399@nyu.edu
-#SBATCH --output=snipsBERT_trainboth_ours_all_%j.out
+#SBATCH --mail-user=
+#SBATCH --output=ASR_Text_Snips_%j.out
 #SBATCH --gres=gpu:1
   
 # Refer to https://sites.google.com/a/nyu.edu/nyu-hpc/documentation/prince/batch/submitting-jobs-with-sbatch
