@@ -6,8 +6,8 @@
 #SBATCH --mem-per-cpu=10GB
 #SBATCH --job-name=fluent_best
 #SBATCH --mail-type=END
-#SBATCH --mail-user=mtp363@nyu.edu
-#SBATCH --output=delete_errorMessage_%j.out
+#SBATCH --mail-user=
+#SBATCH --output=ATS_2_FSC_%j.out
 #SBATCH --gres=gpu:v100:1
   
 # Refer to https://sites.google.com/a/nyu.edu/nyu-hpc/documentation/prince/batch/submitting-jobs-with-sbatch
