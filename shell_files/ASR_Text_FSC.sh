@@ -19,8 +19,8 @@ module purge
 # Activate the conda environment
 module load anaconda3
 source activate alexa_env
-DATA_PATH=//misc/vlgscratch5/PichenyGroup/s2i-common/alexa-slu/fluentai_asr/data
-MODEL_DIR=//misc/vlgscratch5/PichenyGroup/s2i-common/alexa-slu/best_chkpt/fluentai
+DATA_PATH={YOUR_PATH}/fluentai_asr/data
+MODEL_DIR={YOUR_PATH}/best_chkpt/fluentai
 
 # Execute the script
 echo "Model 3 - Finetuning BERT - Train on both GT+ASR - Our config - Test on GT"
