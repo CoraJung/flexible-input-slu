@@ -31,10 +31,10 @@ EXPERIMENT=experiments.experiment_triplet_combinedsystem.ExperimentRunnerTriplet
 
 # Load model3 pretrained on GT+ASR frozen, train on GT, ua on audio, test on GT, default cfg
 python train.py --dataset=$DATASET --data-path=$DATA_PATH/gt_gt --experiment=$EXPERIMENT --model-dir=$FROZEN_MODEL_DIR/gt_ours/ua \
---unfreezing-type=2 --bert-dir=$BERT_DIR > $FROZEN_MODEL_DIR/gt_ours/ua/gt.out
+--unfreezing-type=2 --bert-dir=$BERT_DIR > $FROZEN_MODEL_DIR/gt_ours/ua/gt_combinedsys.out
 
 python train.py --dataset=$DATASET --data-path=$DATA_PATH/gt_asr --experiment=$EXPERIMENT --model-dir=$FROZEN_MODEL_DIR/gt_ours/ua \
---unfreezing-type=2 --bert-dir=$BERT_DIR --infer-only > $FROZEN_MODEL_DIR/gt_ours/ua/asr.out
+--unfreezing-type=2 --bert-dir=$BERT_DIR --infer-only > $FROZEN_MODEL_DIR/gt_ours/ua/asr_combinedsys.out
 
 
 # And we're done!
