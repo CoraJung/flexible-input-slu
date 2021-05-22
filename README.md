@@ -18,7 +18,7 @@ The model uses the Snips SLU or the Fluent Speech dataset (FSC) with speech, gro
 To make our results comparable to the original by [Markus et. al.](https://github.com/alexa/alexa-end-to-end-slu), we use the same partition of the data, which was kindly given to us by the author, Markus Mueller.
 - [Fluent Speech Command (FSC)](https://zenodo.org/record/3509828#.YH8fauhKhPZ)
 - ASR Transcripts: 
-As mentioned in the paper, we generate ASR transcripts by passing the audio inputs to an existing ASR model trained on LibriSpeech using the Kaldi Speech Recognition toolkit. CSV files with ASR transcripts are in `asr_data` folder. Note that these ASR CSVs need to be merged with the original dataset. Refer to `dataprep/data_preprocessing_Snips.ipynb` or `dataprep/data_preprocessing_FSC.ipynb` to create the final dataset for your experiment of choice (i.e gt_gt, gt_asr, gtasr_gt, gtasr_asr).
+As mentioned in the paper, we generate ASR transcripts by passing the audio inputs to an existing ASR model trained on LibriSpeech using the Kaldi Speech Recognition toolkit. CSV files with ASR transcripts are shared in `asr_data` folder. Note that these ASR CSVs need to be merged with the original dataset. Refer to `dataprep/data_preprocessing_Snips.ipynb` or `dataprep/data_preprocessing_FSC.ipynb` to create the final dataset for your experiment of choice (i.e gt_gt, gt_asr, gtasr_gt, gtasr_asr).
 
 ## Installation and data preparation
 
